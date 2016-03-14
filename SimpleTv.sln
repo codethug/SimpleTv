@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTv.Downloader", "SimpleTv.Downloader\SimpleTv.Downloader.csproj", "{5DF481D4-C19C-48B3-BC60-2FE9C54F1C9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTv.Sdk", "SimpleTv.Sdk\SimpleTv.Sdk.csproj", "{402685D0-1E85-47DF-8C75-15A834FE1154}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleTv.Sdk.Tests", "SimpleTv.Sdk.Tests\SimpleTv.Sdk.Tests.csproj", "{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DF481D4-C19C-48B3-BC60-2FE9C54F1C9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF481D4-C19C-48B3-BC60-2FE9C54F1C9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF481D4-C19C-48B3-BC60-2FE9C54F1C9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF481D4-C19C-48B3-BC60-2FE9C54F1C9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{402685D0-1E85-47DF-8C75-15A834FE1154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{402685D0-1E85-47DF-8C75-15A834FE1154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{402685D0-1E85-47DF-8C75-15A834FE1154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{402685D0-1E85-47DF-8C75-15A834FE1154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
