@@ -7,7 +7,7 @@ is for you.  When run, SimpleTV Downloader will download all recordings to a dir
 
 ![Screenshot of a windows console running Simple.TV Downloader](Screenshots/Downloader-0.2.0.png "SimpleTV Downloader in Action")
 
-In this screenshot, the Simple.TV DVR is on the same LAN as the computer running the Downloader, but the downloader will work across the Internet.
+In this screenshot, the Simple.TV DVR is on the same LAN as the computer running the Downloader, but the downloader will also work across the Internet.
 
 The downloader names the files intelligently and files them in a folder per show.  By default, the folder and file naming is [Plex friendly](https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows).
 
