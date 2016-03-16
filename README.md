@@ -13,6 +13,9 @@ Download the latest version from the [Releases Page](https://github.com/codethug
 
 If you'd like to contribute, before creating a pull request, please open a new [Issue](https://github.com/codethug/SimpleTv/issues) or find an existing Issue and comment saying you'd like to work on it, and I'll work with you to make sure we're going in the same direction.
 
+## Thanks
+
+Thanks to jschwalbe for [his bookmarklet](http://community.simple.tv/index.php?/topic/953-download-video-files-with-this-new-bookmarklet/?hl=download) which both inspired me to write Simple.TV Downloader and showed me how to format a URL so that a show can be downloaded.
 
 ## Legal
 
