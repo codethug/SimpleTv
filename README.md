@@ -21,7 +21,7 @@ If you'd like to contribute, before creating a pull request, please open a new [
 
 ## Thanks
 
-Thanks to jschwalbe for [his bookmarklet](http://community.simple.tv/index.php?/topic/953-download-video-files-with-this-new-bookmarklet/?hl=download) which both inspired me to write Simple.TV Downloader and showed me how to format a URL so that a show can be downloaded.
+Thanks to jschwalbe for [his bookmarklet](http://community.simple.tv/index.php?/topic/953-download-video-files-with-this-new-bookmarklet) which both inspired me to write Simple.TV Downloader and showed me how to format a URL so that a show can be downloaded.
 
 ## Legal
 
