@@ -10,6 +10,7 @@ namespace SimpleTv.Downloader
     {
         static void Main(string[] args)
         {
+            var execName = Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location);
             var p = new FluentCommandLineParser<ApplicationArguments>();
 
             p.Setup(arg => arg.Username)
@@ -38,15 +39,15 @@ namespace SimpleTv.Downloader
                 .SetDefault("{ShowName} - S{SeasonNumber00}E{EpisodeNumber00} - {EpisodeName}.mp4");
 
             p.SetupHelp("?", "help")
+                .WithHeader(execName + " is used to download your Simple.Tv recordings.  \r\nUsage:\r\n" +
+                    "\t" + execName + " -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows"
+                )
                 .Callback(text => Console.WriteLine(text));
 
             var result = p.Parse(args);
             if (result.HasErrors)
             {
                 p.HelpOption.ShowHelp(p.Options);
-                var execName = Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location);
-                Console.WriteLine("Usage:");
-                Console.WriteLine("\t" + execName + " -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows");
             }
             else
             {
