@@ -39,7 +39,11 @@ namespace SimpleTv.Sdk
 
         private static string RemoveInvalidFolderCharacters(this string path)
         {
-            return path.RemoveCharacters(Path.GetInvalidPathChars());
+            char[] customInvalidChars = { ':','<','>','|','\b','\t','*','?','\"','\0',
+                Path.VolumeSeparatorChar,Path.DirectorySeparatorChar,Path.AltDirectorySeparatorChar };
+            return path
+                .RemoveCharacters(Path.GetInvalidPathChars())
+                .RemoveCharacters(customInvalidChars);
         }
 
         private static string RemoveInvalidFileCharacters(this string path)
