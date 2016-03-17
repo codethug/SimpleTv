@@ -52,6 +52,9 @@ namespace SimpleTv.Sdk.Http
             }
         }
 
+        // POST to https://us.simple.tv/Auth/SignIn
+        //   ?InvitationKey=&UserName=user%40gmail.com&Password=[EncodedPW]&RememberMe=false&browserDateTime=2016/3/11 19:28:16
+        // Keep cookies for future requests
         internal bool Login(string un, string pw)
         {
             Console.WriteLine("Logging In");
