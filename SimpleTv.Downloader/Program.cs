@@ -11,9 +11,25 @@ namespace SimpleTv.Downloader
 {
     class Program
     {
+        private static string execName = Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location);
+
         static void Main(string[] args)
         {
-            var execName = Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var p = SetupArguments();
+            var result = p.Parse(args);
+            if (result.HasErrors)
+            {
+                p.HelpOption.ShowHelp(p.Options);
+            }
+            else
+            {
+                var downloader = new Downloader(p.Object);
+                downloader.Download();
+            }
+        }
+
+        public static FluentCommandLineParser<ApplicationArguments> SetupArguments()
+        {
             var p = new FluentCommandLineParser<ApplicationArguments>();
 
             p.Setup(arg => arg.Username)
@@ -52,48 +68,8 @@ namespace SimpleTv.Downloader
                 )
                 .Callback(text => Console.WriteLine(text));
 
-            var result = p.Parse(args);
-            if (result.HasErrors)
-            {
-                p.HelpOption.ShowHelp(p.Options);
-            }
-            else
-            {
-                var arguments = p.Object;
-                var client = new SimpleTvClient();
-                Console.WriteLine();
-                if (client.Login(arguments.Username, arguments.Password))
-                {
-                    foreach (var server in client.MediaServers)
-                    {
-                        var filteredShows = server.Shows.Where(s => 
-                            Operators.LikeString(s.Name, arguments.ShowFilter, CompareMethod.Text)
-                        );
-
-                        Console.WriteLine();
-                        foreach (var show in filteredShows)
-                        {
-                            Console.WriteLine("Downloading " + show.Name);
-                            Console.WriteLine("=======================================================");
-
-                            foreach (var episode in show.Episodes)
-                            {
-                                episode.Download(arguments.DownloadFolder, arguments.FolderFormat, arguments.FilenameFormat);
-                            }
-
-                            Console.WriteLine("=======================================================");
-                            Console.WriteLine("Finished downloading " + show.Name);
-                            Console.WriteLine();
-                        }
-
-                    }
-
-                }
-                else
-                {
-                    Console.WriteLine("Login Failed");
-                }
-            }
+            return p;
         }
+
     }
 }
