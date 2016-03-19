@@ -147,8 +147,8 @@ namespace SimpleTv.Sdk.Http
                         Name = a.InnerText,
                         AccountId = new Guid(watchShowAttributes["data-accountid"].Value),
                         AccountGuid = new Guid(watchShowAttributes["data-accountguid"].Value),
-                        CurrentSwVersion = Int16.Parse(watchShowAttributes["data-currentswversion"].Value),
-                        MediaServerGeneration = Int16.Parse(watchShowAttributes["data-mediaservergen"].Value),
+                        CurrentSwVersion = Int32.Parse(watchShowAttributes["data-currentswversion"].Value),
+                        MediaServerGeneration = Int32.Parse(watchShowAttributes["data-mediaservergen"].Value),
                         UserId = new Guid(watchShowAttributes["data-userid"].Value),
                         Setup = Boolean.Parse(watchShowAttributes["data-setup"].Value),
                         RegisteredToCurrentAccount = Boolean.Parse(watchShowAttributes["data-registeredtocurrentaccount"].Value)
@@ -290,7 +290,7 @@ namespace SimpleTv.Sdk.Http
                 {
                     Id = new Guid(f.Attributes["data-groupid"].Value),
                     Name = f.SelectTag("b").First().InnerText,
-                    NumEpisodes = Int16.Parse(f.SelectClass("no").First().InnerText)
+                    NumEpisodes = Int32.Parse(f.SelectClass("no").First().InnerText)
                 }).ToList();
 
             return shows;
@@ -339,8 +339,8 @@ namespace SimpleTv.Sdk.Http
                     InstanceId = new Guid(article.SelectTag("a").First().Attributes["data-instanceid"].Value),
                     EpisodeName = article.SelectTag("h3").First().ChildNodes[0].InnerText.Trim(),
                     Description = article.SelectTag("p").First().InnerText.Trim(),
-                    SeasonNumber = Int16.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(1).First().InnerText.Trim()),
-                    EpisodeNumber = Int16.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(2).First().InnerText.Trim())
+                    SeasonNumber = Int32.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(1).First().InnerText.Trim()),
+                    EpisodeNumber = Int32.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(2).First().InnerText.Trim())
                 }).ToList();
 
             return episodes;
