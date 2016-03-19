@@ -11,6 +11,7 @@ using HtmlAgilityPack;
 using NodaTime;
 
 using SimpleTv.Sdk.Models;
+using SimpleTv.Sdk.Diagnostics;
 
 namespace SimpleTv.Sdk.Http
 {
@@ -29,6 +30,21 @@ namespace SimpleTv.Sdk.Http
             this.clock = clock;
             this.dtzProvider = dtzProvider;
         }
+
+        public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived;
+        protected virtual void OnHttpResponseReceived(HttpData data)
+        {
+            if (HttpResponseReceived != null)
+            {
+                var eventArgs = new HttpResponseReceivedEventArgs()
+                {
+                    HttpData = data,
+                    Timestamp = DateTime.UtcNow
+                };
+                HttpResponseReceived(this, eventArgs);
+            }
+        }
+
 
         private int BrowserUTCOffsetMinutes
         {
@@ -68,6 +84,13 @@ namespace SimpleTv.Sdk.Http
                     HttpUtility.UrlEncode(pw),
                     HttpUtility.UrlEncode(BrowserDateTimeUTC)));
 
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = simpleTvBaseUrl + "/Auth/SignIn",
+                HttpVerb = "POST",
+                Response = rawResponse
+            });
+
             // Bad Login:
             // HTTP 200     {"SignInError":"Email Address or Password is incorrect."}
             dynamic response = Newtonsoft.Json.JsonConvert.DeserializeObject(rawResponse);
@@ -83,6 +106,13 @@ namespace SimpleTv.Sdk.Http
             Console.WriteLine("Loading Media Servers");
             var url = "http://us-my.simple.tv";
             var response = client.DownloadString(url);
+
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = url,
+                HttpVerb = "GET",
+                Response = response
+            });
 
             var html = new HtmlDocument();
             html.LoadHtml(response);
@@ -142,6 +172,13 @@ namespace SimpleTv.Sdk.Http
             var url = string.Format(urlTemplate, server.AccountId, server.Id);
             var rawResponse = client.DownloadString(url);
             dynamic response = Newtonsoft.Json.JsonConvert.DeserializeObject(rawResponse);
+
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = url,
+                HttpVerb = "GET",
+                Response = rawResponse
+            });
 
             // {
             //     "MediaServerId": "49535352-5453-3156-0005-100000001576",
@@ -225,6 +262,13 @@ namespace SimpleTv.Sdk.Http
             var html = new HtmlDocument();
             html.LoadHtml(response);
 
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = url,
+                HttpVerb = "GET",
+                Response = response
+            });
+
             //	<section class="my-shows-list">
             //		<figure data-groupid="c868a1ab-468f-11e5-b06f-22000b688027">
             //			<div class="thumbnail-showcard">
@@ -261,6 +305,13 @@ namespace SimpleTv.Sdk.Http
             var response = client.DownloadString(url);
             var html = new HtmlDocument();
             html.LoadHtml(response);
+
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = url,
+                HttpVerb = "GET",
+                Response = response
+            });
 
             //	<div id="recorded" class="episodes">
             //        <article>
@@ -304,6 +355,13 @@ namespace SimpleTv.Sdk.Http
             var response = client.DownloadString(url);
             var html = new HtmlDocument();
             html.LoadHtml(response);
+
+            OnHttpResponseReceived(new HttpData()
+            {
+                RequestedUrl = url,
+                HttpVerb = "GET",
+                Response = response
+            });
 
             // 	<div id="video-player-large" data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" data-denystreaming="false" data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
 

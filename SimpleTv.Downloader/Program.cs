@@ -1,11 +1,8 @@
 ﻿using System;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.CompilerServices;
 
-using SimpleTv.Sdk;
 using Fclp;
 using System.IO;
-using System.Linq;
+using SimpleTv.Sdk.Diagnostics;
 
 namespace SimpleTv.Downloader
 {
@@ -24,7 +21,27 @@ namespace SimpleTv.Downloader
             else
             {
                 var downloader = new Downloader(p.Object);
-                downloader.Download();
+                try
+                {
+                    downloader.Download();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.AsDetailedString());
+                    if (!p.Object.LogHttpCalls)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("To log details about the HTTP calls, run this again with the '-l' flag");
+                        Console.WriteLine();
+                    }
+                }
+                finally
+                {
+                    if (p.Object.LogHttpCalls)
+                    {
+                        downloader.SaveHttpLogs();
+                    }
+                }
             }
         }
 
@@ -61,6 +78,11 @@ namespace SimpleTv.Downloader
                 .As('n', "filenameformat")
                 .WithDescription("The filename format for saving the recording.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
                 .SetDefault("{ShowName} - S{SeasonNumber00}E{EpisodeNumber00} - {EpisodeName}.mp4");
+
+            p.Setup(arg => arg.LogHttpCalls)
+                .As('l', "logHttpCalls")
+                .WithDescription("Will save a log of all http calls, helpful for debugging errors")
+                .SetDefault(false);
 
             p.SetupHelp("?", "help")
                 .WithHeader(execName + " is used to download your Simple.Tv recordings.  \r\nUsage:\r\n" +

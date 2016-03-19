@@ -14,5 +14,6 @@ namespace SimpleTv.Downloader
         public string FolderFormat { get; set; }
         public string FilenameFormat { get; set; }
         public string ShowFilter { get; set; }
+        public bool LogHttpCalls { get; set; }
     }
 }
