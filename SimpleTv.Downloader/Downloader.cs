@@ -35,7 +35,7 @@ namespace SimpleTv.Downloader
         public void SaveHttpLogs(string error)
         {
             var data = JsonConvert.SerializeObject(new { error = error, http = httpLogs });
-            var fileName = string.Format("SimpleTv.DownloadLog.{0:yyyy-MM-dd_HH-mm-ss}.json", DateTime.UtcNow);
+            var fileName = string.Format("SimpleTv.DownloadLog.{0:yyyy-MM-dd_HH-mm-ss}.json.txt", DateTime.UtcNow);
 
             // First try the current directory
             string fullFileName = Path.Combine(Directory.GetCurrentDirectory(), fileName);
