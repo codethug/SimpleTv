@@ -32,7 +32,7 @@ namespace SimpleTv.Sdk.Models
         public Guid AccountId { get; set; }
 
         public Guid AccountGuid { get; set; }
-        public int CurrentSwVersion { get; set; }
+        public string CurrentSwVersion { get; set; }
         public int MediaServerGeneration { get; set; }
         public Guid UserId { get; set; }
         public bool Setup { get; set; }
