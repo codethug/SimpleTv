@@ -297,16 +297,17 @@ namespace SimpleTv.Sdk.Http
             var episodes = html.GetElementbyId("recorded")
                 .SelectTag("article")
                 .Select(article => new Episode(this, show) {
-                    Id = new Guid(article.SelectTag("a").First().Attributes["data-itemid"].Value),
-                    InstanceId = new Guid(article.SelectTag("a").First().Attributes["data-instanceid"].Value),
-                    EpisodeName = article.SelectTag("h3").First().ChildNodes[0].InnerText.Trim(),
-                    Description = article.SelectTag("p").First().InnerText.Trim(),
-                    SeasonNumber = Int32.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(1).First().InnerText.Trim()),
-                    EpisodeNumber = Int32.Parse(article.SelectClass("show-details-info").SelectTag("b").Skip(2).First().InnerText.Trim())
+                    Id = article.ParseEpisodeId(),
+                    InstanceId = article.ParseInstanceId(),
+                    EpisodeName = article.ParseEpisodeName(),
+                    Description = article.ParseEpisodeDescription(),
+                    SeasonNumber = article.ParseSeasonNumber(),
+                    EpisodeNumber = article.ParseEpisodeNumber()
                 }).ToList();
 
             return episodes;
         }
+
 
         internal string GetEpisodeLocation(Episode episode)
         {

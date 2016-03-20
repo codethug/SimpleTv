@@ -52,5 +52,42 @@ namespace SimpleTv.Sdk.Http
 
             return mediaServers;
         }
+
+        public static string ParseEpisodeName(this HtmlNode article)
+        {
+            var element = article.SelectTag("h3").FirstOrDefault();
+            return element == null ? null : element.ChildNodes[0].InnerText.Trim();
+        }
+
+        public static string ParseEpisodeDescription(this HtmlNode article)
+        {
+            var element = article.SelectTag("p").FirstOrDefault();
+            return element == null ? null : element.InnerText.Trim();
+        }
+
+        public static Guid ParseEpisodeId(this HtmlNode article)
+        {
+            var element = article.SelectTag("a").FirstOrDefault();
+            return element == null ? Guid.Empty : new Guid(element.Attributes["data-itemid"].Value);
+        }
+
+        public static Guid ParseInstanceId(this HtmlNode article)
+        {
+            var element = article.SelectTag("a").FirstOrDefault();
+            return element == null ? Guid.Empty : new Guid(element.Attributes["data-instanceid"].Value);
+        }
+
+        public static int ParseSeasonNumber(this HtmlNode article)
+        {
+            var element = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault();
+            return element == null ? 0 : Int32.Parse(element.InnerText.Trim());
+        }
+
+        public static int ParseEpisodeNumber(this HtmlNode article)
+        {
+            var element = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault();
+            return element == null ? 0 : Int32.Parse(element.InnerText.Trim());
+        }
+
     }
 }
