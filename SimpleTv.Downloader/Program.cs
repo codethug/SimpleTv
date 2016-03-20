@@ -20,6 +20,7 @@ namespace SimpleTv.Downloader
             }
             else
             {
+                string error = null;
                 var downloader = new Downloader(p.Object);
                 try
                 {
@@ -27,7 +28,8 @@ namespace SimpleTv.Downloader
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.AsDetailedString());
+                    error = e.AsDetailedString();
+                    Console.WriteLine(error);
                     if (!p.Object.LogHttpCalls)
                     {
                         Console.WriteLine();
@@ -39,7 +41,7 @@ namespace SimpleTv.Downloader
                 {
                     if (p.Object.LogHttpCalls)
                     {
-                        downloader.SaveHttpLogs();
+                        downloader.SaveHttpLogs(error);
                     }
                 }
             }
