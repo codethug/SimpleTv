@@ -117,18 +117,18 @@ namespace SimpleTv.Sdk.Http
             var html = new HtmlDocument();
             html.LoadHtml(response);
             var mediaServers = html.ParseMediaServers(this);
-            mediaServers.ForEach(ms =>
+            return mediaServers.Where(ms =>
             {
+                // Find out where the DVR is on the internet/network
                 LocateMediaServer(ms);
-                TestMediaServerLocations(ms);
-            });
-
-            return mediaServers;
+                // Ensure we can actually communicate with the DVR
+                return TestMediaServerLocations(ms);
+            }).ToList();
         }
 
         private MediaServer LocateMediaServer(MediaServer server)
         {
-            Console.WriteLine("Locating Media Server " + server.Name);
+            Console.WriteLine("Locating Media Server \"" + server.Name + "\"");
             var urlTemplate = "https://us-my.simple.tv/Data/RealTimeData?accountId={0}&mediaServerId={1}&playerAlternativeAvailable=false";
 
             var url = string.Format(urlTemplate, server.AccountId, server.Id);
@@ -181,20 +181,25 @@ namespace SimpleTv.Sdk.Http
             return server;
         }
 
-        private void TestMediaServerLocations(MediaServer ms)
+        private bool TestMediaServerLocations(MediaServer ms)
         {
-            Console.WriteLine("Testing Media Server Locations for " + ms.Name);
+            Console.WriteLine("Testing Media Server \"" + ms.Name + "\"");
             if (PingUrl(ms.LocalPingUrl))
             {
                 ms.UseLocalStream = true;
+                return true;
             }
             else if (PingUrl(ms.RemotePingUrl))
             {
                 ms.UseLocalStream = false;
+                return true;
             }
             else
             {
-                throw new Exception("Cannot access local or remote stream");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("I can't communicate with your \"{0}\" DVR.  Please verify that you can play a show from your DVR at https://my.simple.tv.", ms.Name);
+                Console.ResetColor();
+                return false;
             }
         }
 
