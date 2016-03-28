@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace SimpleTv.Downloader
 {
@@ -57,34 +58,47 @@ namespace SimpleTv.Downloader
         public void Download()
         {
             Console.WriteLine();
-            if (client.Login(arguments.Username, arguments.Password))
+            try
             {
-                foreach (var server in client.MediaServers)
+                if (client.Login(arguments.Username, arguments.Password))
                 {
-                    var filteredShows = server.Shows.Where(s =>
-                        Operators.LikeString(s.Name, arguments.ShowFilter, CompareMethod.Text)
-                    );
-
-                    Console.WriteLine();
-                    foreach (var show in filteredShows)
+                    foreach (var server in client.MediaServers)
                     {
-                        Console.WriteLine("Downloading " + show.Name);
-                        Console.WriteLine("=======================================================");
+                        var filteredShows = server.Shows.Where(s =>
+                            Operators.LikeString(s.Name, arguments.ShowFilter, CompareMethod.Text)
+                        );
 
-                        foreach (var episode in show.Episodes)
-                        {
-                            episode.Download(arguments.DownloadFolder, arguments.FolderFormat, arguments.FilenameFormat);
-                        }
-
-                        Console.WriteLine("=======================================================");
-                        Console.WriteLine("Finished downloading " + show.Name);
                         Console.WriteLine();
+                        foreach (var show in filteredShows)
+                        {
+                            Console.WriteLine(string.Format("Downloading {0} episodes of {1}", show.Episodes.Count, show.Name));
+                            Console.WriteLine("=======================================================");
+
+                            foreach (var episode in show.Episodes)
+                            {
+                                episode.Download(arguments.DownloadFolder, arguments.FolderFormat, arguments.FilenameFormat);
+                            }
+
+                            Console.WriteLine("=======================================================");
+                            Console.WriteLine("Finished downloading " + show.Name);
+                            Console.WriteLine();
+                        }
                     }
                 }
+                else
+                {
+                    Console.WriteLine("Login Failed");
+                }
+
             }
-            else
+            catch (WebException e)
             {
-                Console.WriteLine("Login Failed");
+                if (e.Status == WebExceptionStatus.NameResolutionFailure)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Are you sure you're connected to the internet?  I'm having trouble with DNS resolution.");
+                    Console.ResetColor();
+                }
             }
         }
     }
