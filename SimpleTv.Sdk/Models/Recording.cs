@@ -1,6 +1,7 @@
 ﻿using System;
 
 using SimpleTv.Sdk.Http;
+using SimpleTv.Sdk.Naming;
 
 namespace SimpleTv.Sdk.Models
 {
