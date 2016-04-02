@@ -84,6 +84,9 @@
       <Name>SimpleTv.Sdk</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="HtmlParserExtensions\HtmlData\MainPage2.html" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

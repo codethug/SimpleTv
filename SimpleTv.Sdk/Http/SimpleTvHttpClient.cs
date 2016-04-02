@@ -292,38 +292,7 @@ namespace SimpleTv.Sdk.Http
                 Response = response
             });
 
-            //	<div id="recorded" class="episodes">
-            //        <article>
-            //			<div class="f_right buttons">
-            //				<a data-groupid="0912f1a0-2a19-4cfd-879c-6b62d6567ff3" data-itemid="d0bf0ce7-8a05-11e5-b973-22000b6981a6" data-instanceid="6db5790a-8940-11e5-b973-22000b6981a6" class="button-standard-watch">Watch <span></span></a>
-            //				...
-            //			</div>
-            //			<h3>Blood Brothers <span class="show-duration">( 1 hr 45 secs )</span></h3>                    
-            //			<div class="show-details-info">
-            //				Tuesday, November 24 at 8:00 PM	&nbsp;·&nbsp; <b>6.1</b> WTVRDT
-            //				<span class="show-attribute">NEW</span>
-            //				<span class="show-attribute">TV14|TVPG</span>
-            //				<span class="show-attribute">HD</span>
-            //				<br />
-            //				Season: <b>13</b> Episode: <b>10</b>
-            //				<!--&nbsp;&nbsp;·&nbsp; 24 minutes-->
-            //			</div>
-            //			<p>A sailor who lost two siblings -- Marines who were killed in the line of duty -- needs a bone marrow transplant; Bishop returns to Oklahoma for Thanksgiving.</p>
-            //       </article>	
-
-            var episodes = html.GetElementbyId("recorded")
-                .SelectTag("article")
-                .Select(article => new Episode(this, show)
-                {
-                    Id = article.ParseEpisodeId(),
-                    InstanceId = article.ParseInstanceId(),
-                    EpisodeName = article.ParseEpisodeName(),
-                    Description = article.ParseEpisodeDescription(),
-                    SeasonNumber = article.ParseSeasonNumber(),
-                    EpisodeNumber = article.ParseEpisodeNumber()
-                }).ToList();
-
-            return episodes;
+            return html.ParseEpisodes(show, this);
         }
 
 

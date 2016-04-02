@@ -53,41 +53,36 @@ namespace SimpleTv.Sdk.Http
             return mediaServers;
         }
 
-        public static string ParseEpisodeName(this HtmlNode article)
+        public static List<Episode> ParseEpisodes(this HtmlDocument html, Show show, SimpleTvHttpClient client)
         {
-            var element = article.SelectTag("h3").FirstOrDefault();
-            return element == null ? null : element.ChildNodes[0].InnerText.Trim();
+            return html.GetElementbyId("recorded")
+                .SelectTag("article")
+                .Select(article => new Episode(client, show)
+                {
+                    Id = article.SelectTag("a").FirstOrDefault()
+                        .IfNotNull(e => new Guid(e.Attributes["data-itemid"].Value)),
+                    InstanceId = article.SelectTag("a").FirstOrDefault()
+                        .IfNotNull(e => new Guid(e.Attributes["data-instanceid"].Value)),
+                    EpisodeName = article.SelectTag("h3").FirstOrDefault()
+                        .IfNotNull(e => e.ChildNodes[0].InnerText.Trim()),
+                    Description = article.SelectTag("p").FirstOrDefault()
+                        .IfNotNull(e => e.InnerText.Trim()),
+                    SeasonNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault()
+                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
+                    EpisodeNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault()
+                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim()))
+                }).ToList();
         }
 
-        public static string ParseEpisodeDescription(this HtmlNode article)
+        public static T IfNotNull<S,T>(this S source, Func<S,T> evaluateIfSourceNotNull)
         {
-            var element = article.SelectTag("p").FirstOrDefault();
-            return element == null ? null : element.InnerText.Trim();
+            if (source == null)
+            {
+                return default(T);
+            } else
+            {
+                return evaluateIfSourceNotNull(source);
+            }
         }
-
-        public static Guid ParseEpisodeId(this HtmlNode article)
-        {
-            var element = article.SelectTag("a").FirstOrDefault();
-            return element == null ? Guid.Empty : new Guid(element.Attributes["data-itemid"].Value);
-        }
-
-        public static Guid ParseInstanceId(this HtmlNode article)
-        {
-            var element = article.SelectTag("a").FirstOrDefault();
-            return element == null ? Guid.Empty : new Guid(element.Attributes["data-instanceid"].Value);
-        }
-
-        public static int ParseSeasonNumber(this HtmlNode article)
-        {
-            var element = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault();
-            return element == null ? 0 : Int32.Parse(element.InnerText.Trim());
-        }
-
-        public static int ParseEpisodeNumber(this HtmlNode article)
-        {
-            var element = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault();
-            return element == null ? 0 : Int32.Parse(element.InnerText.Trim());
-        }
-
     }
 }
