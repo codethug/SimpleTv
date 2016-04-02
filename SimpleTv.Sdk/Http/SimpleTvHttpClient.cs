@@ -73,7 +73,8 @@ namespace SimpleTv.Sdk.Http
         // Keep cookies for future requests
         internal bool Login(string un, string pw)
         {
-            Console.WriteLine("Logging In");
+            var description = "Logging In";
+            Console.WriteLine(description);
             // Perform Login
             client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
             var rawResponse = client.UploadString(
@@ -86,6 +87,7 @@ namespace SimpleTv.Sdk.Http
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = simpleTvBaseUrl + "/Auth/SignIn",
                 HttpVerb = "POST",
                 Response = rawResponse
@@ -103,12 +105,14 @@ namespace SimpleTv.Sdk.Http
 
         internal List<MediaServer> GetMediaServers()
         {
-            Console.WriteLine("Loading Media Servers");
+            var description = "Loading Media Servers";
+            Console.WriteLine(description);
             var url = "http://us-my.simple.tv";
             var response = client.DownloadString(url);
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = url,
                 HttpVerb = "GET",
                 Response = response
@@ -128,7 +132,8 @@ namespace SimpleTv.Sdk.Http
 
         private MediaServer LocateMediaServer(MediaServer server)
         {
-            Console.WriteLine("Locating Media Server \"" + server.Name + "\"");
+            var description = "Locating Media Server \"" + server.Name + "\"";
+            Console.WriteLine(description);
             var urlTemplate = "https://us-my.simple.tv/Data/RealTimeData?accountId={0}&mediaServerId={1}&playerAlternativeAvailable=false";
 
             var url = string.Format(urlTemplate, server.AccountId, server.Id);
@@ -137,6 +142,7 @@ namespace SimpleTv.Sdk.Http
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = url,
                 HttpVerb = "GET",
                 Response = rawResponse
@@ -183,7 +189,8 @@ namespace SimpleTv.Sdk.Http
 
         private bool TestMediaServerLocations(MediaServer ms)
         {
-            Console.WriteLine("Testing Media Server \"" + ms.Name + "\"");
+            var description = "Testing Media Server \"" + ms.Name + "\"";
+            Console.WriteLine(description);
             if (PingUrl(ms.LocalPingUrl))
             {
                 ms.UseLocalStream = true;
@@ -222,6 +229,8 @@ namespace SimpleTv.Sdk.Http
 
         internal List<Show> GetShows(MediaServer server)
         {
+            var description = "Loading shows on " + server.Name;
+            Console.WriteLine(description);
             var urlTemplate = "https://us-my.simple.tv/Library/MyShows?browserDateTimeUTC={0}&mediaServerID={1}&browserUTCOffsetMinutes={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, server.Id, BrowserUTCOffsetMinutes);
 
@@ -231,6 +240,7 @@ namespace SimpleTv.Sdk.Http
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = url,
                 HttpVerb = "GET",
                 Response = response
@@ -265,6 +275,7 @@ namespace SimpleTv.Sdk.Http
 
         internal List<Episode> GetEpisodes(Show show)
         {
+            var description = "Loading episodes of " + show.Name;
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/ShowDetail?browserDateTimeUTC={0}&browserUTCOffsetMinutes={1}&groupID={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, BrowserUTCOffsetMinutes, show.Id);
@@ -275,6 +286,7 @@ namespace SimpleTv.Sdk.Http
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = url,
                 HttpVerb = "GET",
                 Response = response
@@ -301,7 +313,8 @@ namespace SimpleTv.Sdk.Http
 
             var episodes = html.GetElementbyId("recorded")
                 .SelectTag("article")
-                .Select(article => new Episode(this, show) {
+                .Select(article => new Episode(this, show)
+                {
                     Id = article.ParseEpisodeId(),
                     InstanceId = article.ParseInstanceId(),
                     EpisodeName = article.ParseEpisodeName(),
@@ -316,6 +329,7 @@ namespace SimpleTv.Sdk.Http
 
         internal string GetEpisodeLocation(Episode episode)
         {
+            var description = "Finding Episode " + episode.EpisodeName;
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
             var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.show.Id, episode.Id, episode.InstanceId);
@@ -326,6 +340,7 @@ namespace SimpleTv.Sdk.Http
 
             OnHttpResponseReceived(new HttpData()
             {
+                Description = description,
                 RequestedUrl = url,
                 HttpVerb = "GET",
                 Response = response
@@ -346,11 +361,13 @@ namespace SimpleTv.Sdk.Http
 
         internal void Download(Episode episode, string fileName)
         {
+            var fullPathToVideo = episode.show.server.StreamBaseUrl + GetEpisodeLocation(episode);
+            var description = "Downloading " + fullPathToVideo + " to " + fileName;
+            Console.WriteLine(description);
+
             client.DownloadProgressChanged += Client_DownloadProgressChanged;
             client.DownloadFileCompleted += Client_DownloadFileCompleted;
 
-            var fullPathToVideo = episode.show.server.StreamBaseUrl + GetEpisodeLocation(episode);
-            Console.WriteLine("Downloading " + fullPathToVideo + " to " + fileName);
             var directory = Path.GetDirectoryName(fileName);
             Directory.CreateDirectory(directory);
 
