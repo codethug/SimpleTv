@@ -62,7 +62,7 @@
     <Compile Include="Http\HtmlParserExtensions.cs" />
     <Compile Include="Http\HttpDocumentExtensions.cs" />
     <Compile Include="Http\SimpleTvHttpClient.cs" />
-    <Compile Include="Models\Recording.cs" />
+    <Compile Include="Models\Episode.cs" />
     <Compile Include="Models\MediaServer.cs" />
     <Compile Include="Models\Show.cs" />
     <Compile Include="Naming\PathCleaner.cs" />
