@@ -31,19 +31,61 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         }
 
         [TestMethod]
+        public void GenerateFileName_ShouldAddOneToMaxNumberedFilenameMatchingPattern()
+        {
+            // Arrange
+            using (var baseFolder = new TestingFolder())
+            {
+                var episode = new Episode(null, null);
+                var folderFormat = "TestFolderName";
+                var fileNameFormat = "TestFileName-{nnnn}.mp4";
+                var token = "{nnnn}";
+                Directory.CreateDirectory(Path.Combine(baseFolder.Location, folderFormat));
+                File.Create(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0115.mp4")).Dispose();
+                File.Create(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0132.mp4")).Dispose();
+                File.Create(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0111.mp4")).Dispose();
+
+                // Act
+                var fileName = ShowNamer.GenerateFileName(episode, baseFolder.Location, folderFormat, fileNameFormat);
+
+                // Assert
+                fileName.Should().Be(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0133.mp4"));
+            }
+        }
+
+        [TestMethod]
+        public void GenerateFileName_ShouldUseZeroWhenNoFilenameMatchingPattern()
+        {
+            // Arrange
+            using (var baseFolder = new TestingFolder())
+            {
+                var episode = new Episode(null, null);
+                var folderFormat = "TestFolderName";
+                var fileNameFormat = "TestFileName-{nnnn}.mp4";
+                var token = "{nnnn}";
+
+                // Act
+                var fileName = ShowNamer.GenerateFileName(episode, baseFolder.Location, folderFormat, fileNameFormat);
+
+                // Assert
+                fileName.Should().Be(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0001.mp4"));
+            }
+        }
+
+        [TestMethod]
         public void GetMaxNumberedFileName_ShouldFindLargestOf3FileNamesMatchingPattern()
         {
             // Arrange
-            using (var tempFolder = new TestingFolder())
+            using (var baseFolder = new TestingFolder())
             {
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
                 var token = "{nnnn}";
-                File.Create(Path.Combine(tempFolder.Location, "TestFileName-0012.mp4")).Dispose();
-                File.Create(Path.Combine(tempFolder.Location, "TestFileName-0025.mp4")).Dispose();
-                File.Create(Path.Combine(tempFolder.Location, "TestFileName-0045.mp4")).Dispose();
+                File.Create(Path.Combine(baseFolder.Location, "TestFileName-0012.mp4")).Dispose();
+                File.Create(Path.Combine(baseFolder.Location, "TestFileName-0025.mp4")).Dispose();
+                File.Create(Path.Combine(baseFolder.Location, "TestFileName-0045.mp4")).Dispose();
 
                 // Act
-                var maxNum = ShowNamer.GetMaxNumberedFileName(tempFolder.Location, fileNameFormat, token);
+                var maxNum = ShowNamer.GetMaxNumberedFileName(baseFolder.Location, fileNameFormat, token);
 
                 // Assert
                 maxNum.Should().Be(45);

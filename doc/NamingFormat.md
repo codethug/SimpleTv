@@ -54,16 +54,24 @@ want the episode name in the filename, you could do this:
 # Tokens
 
 There are several tokens that can be used for naming files and folders.  As seen above, when 
-defining a format, the tokens should be enlosed in curly braces.  
+defining a format, the tokens should be enclosed in curly braces.  
 
 - ShowName
 - SeasonNumber   
 - EpisodeNumber  
-- SeasonNumber00 
-- EpisodeNumber00
 - EpisodeName  
 - DateTime      
 - ChannelNumber  
 
-For the tokens ending in `00`, the `00` indicates that two digits will always be used,
-with leading zeros added when necessary.  For example, if the value is `8`, then `08` will be used.
+This token is used to generate sequential numbers for names that are otherwise identical.  If
+you want your episodes to be named `MyShow-0001.mp4`, `MyShow-0002.mp4`, etc., then you can do
+something like `{ShowName}-{nnnn}.mp4`
+
+- nnnn
+
+For these tokens, the `00` indicates that two digits will always be used, with leading zeros 
+added when necessary.  For example, if the value is `8`, then `08` will be used.
+
+- SeasonNumber00 
+- EpisodeNumber00
+

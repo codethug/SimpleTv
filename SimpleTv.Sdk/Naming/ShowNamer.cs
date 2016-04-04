@@ -12,7 +12,6 @@ namespace SimpleTv.Sdk.Naming
 {
     public static class ShowNamer
     {
-        // Todo: add information on new token to documentation (only works with filename, not folders)
         // Todo: Remove "{nnnn}" magic string
         // Todo: Make "{nnnn}" more flexible in regargs to number of 'n's
         public static string GenerateFileName(this Episode episode, string baseFolder, string folderFormat, string fileNameTemplate)
@@ -38,9 +37,16 @@ namespace SimpleTv.Sdk.Naming
 
         public static int GetMaxNumberedFileName(string folder, string fileNameFormat, string token)
         {
-            return Directory
-                .GetFiles(folder, fileNameFormat.Replace(token, "*"), SearchOption.TopDirectoryOnly)
-                .Max(f => GetSequenceNumberFromFileName(fileNameFormat, token, Path.GetFileName(f)));
+            if (Directory.Exists(folder))
+            {
+                return Directory
+                    .GetFiles(folder, fileNameFormat.Replace(token, "*"), SearchOption.TopDirectoryOnly)
+                    .Max(f => GetSequenceNumberFromFileName(fileNameFormat, token, Path.GetFileName(f)));
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         /// <summary>Find the file with the largest sequence number matching the pattern</summary>
@@ -99,6 +105,7 @@ namespace SimpleTv.Sdk.Naming
             tokens.Add("EpisodeName",       HttpUtility.HtmlDecode(episode.EpisodeName));
             tokens.Add("DateTime",          episode.DateTime.IfNotNull(dt => dt.Value.ToString("yyyy-MM-ddTHHmm"))); // 2000-08-15T1653
             tokens.Add("ChannelNumber",     episode.ChannelNumber);                 // "15.7"
+            // {nnnn} is also available, but is handled separately in ShowNamer.GenerateFileName
 
             return tokens;
         }
