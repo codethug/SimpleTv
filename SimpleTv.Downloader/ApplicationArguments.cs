@@ -10,7 +10,9 @@ namespace SimpleTv.Downloader
     {
         public string Username { get; set; }
         public string Password { get; set; }
-        public string DownloadFolder { get; set; }
+        // Use newer Folder parameter instead of DownloadFolder.  
+        public string DownloadFolder { set; get; }
+        public string Folder { get; set; }
         public string FolderFormat { get; set; }
         public string FilenameFormat { get; set; }
         public string ShowFilter { get; set; }

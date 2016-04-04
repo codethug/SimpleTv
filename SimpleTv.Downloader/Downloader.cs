@@ -76,7 +76,7 @@ namespace SimpleTv.Downloader
 
                             foreach (var episode in show.Episodes)
                             {
-                                episode.Download(arguments.DownloadFolder, arguments.FolderFormat, arguments.FilenameFormat);
+                                episode.Download(arguments.Folder, arguments.FolderFormat, arguments.FilenameFormat);
                             }
 
                             Console.WriteLine("=======================================================");
