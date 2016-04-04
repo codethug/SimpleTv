@@ -13,7 +13,7 @@ The downloader names the files intelligently and files them in a folder per show
 
 ## Customizing Folder\\Filename
 
-To learn how to customize how the files are saved, see the [NamingFormat documentation](doc\NamingFormat.md).
+To learn how to customize how the files are saved, see the [NamingFormat documentation](doc/NamingFormat.md).
 
 ## Troubleshooting
 
