@@ -27,5 +27,8 @@ namespace SimpleTv.Sdk.Models
         public int SeasonNumber { get; set; }
         public int EpisodeNumber { get; set; }
         public string Description { get; set; }
+
+        public string ChannelNumber { get; set; }
+        public DateTime? DateTime { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using System.Web;
 using SimpleTv.Sdk.Models;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SimpleTv.Sdk.Http;
 
 namespace SimpleTv.Sdk.Naming
 {
@@ -86,16 +87,18 @@ namespace SimpleTv.Sdk.Naming
             return input;
         }
 
-        private static Dictionary<string, string> GenerateTokens(this Episode episode)
+        public static Dictionary<string, string> GenerateTokens(this Episode episode)
         {
             var tokens = new Dictionary<string, string>();
 
-            tokens.Add("ShowName",          HttpUtility.HtmlDecode(episode.show.Name));
+            tokens.Add("ShowName",          HttpUtility.HtmlDecode(episode.show.IfNotNull(s => s.Name)));
             tokens.Add("SeasonNumber",      episode.SeasonNumber.ToString());       // 3 => "3"
             tokens.Add("EpisodeNumber",     episode.EpisodeNumber.ToString());      // 5 => "5"
             tokens.Add("SeasonNumber00",    episode.SeasonNumber.ToString("D2"));   // 3 => "03"
             tokens.Add("EpisodeNumber00",   episode.EpisodeNumber.ToString("D2"));  // 3 => "03"
             tokens.Add("EpisodeName",       HttpUtility.HtmlDecode(episode.EpisodeName));
+            tokens.Add("DateTime",          episode.DateTime.IfNotNull(dt => dt.Value.ToString("yyyy-MM-ddTHHmm"))); // 2000-08-15T1653
+            tokens.Add("ChannelNumber",     episode.ChannelNumber);                 // "15.7"
 
             return tokens;
         }

@@ -94,5 +94,37 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Assert
             sequenceNumber.Should().Be(3);
         }
+
+        [TestMethod]
+        public void GenerateTokens_ShouldGenerateChannelNumberFromEpisode()
+        {
+            // Arrange
+            var episode = new Episode(null, null)
+            {
+                ChannelNumber = "97523.12345"
+            };
+
+            // Act
+            var tokens = episode.GenerateTokens();
+
+            // Assert
+            tokens["ChannelNumber"].Should().Be("97523.12345");
+        }
+
+        [TestMethod]
+        public void GenerateTokens_ShouldGenerateDateTimeFromEpisode()
+        {
+            // Arrange
+            var episode = new Episode(null, null)
+            {
+                DateTime = new DateTime(2000, 08, 15, 16, 53, 00)
+            };
+
+            // Act
+            var tokens = episode.GenerateTokens();
+
+            // Assert
+            tokens["DateTime"].Should().Be("2000-08-15T1653");
+        }
     }
 }
