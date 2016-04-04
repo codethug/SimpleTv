@@ -11,6 +11,10 @@ In this screenshot, the Simple.TV DVR is on the same LAN as the computer running
 
 The downloader names the files intelligently and files them in a folder per show.  By default, the folder and file naming is [Plex friendly](https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows).
 
+## Customizing Folder\\Filename
+
+To learn how to customize how the files are saved, see the [NamingFormat documentation](doc\NamingFormat.md).
+
 ## Troubleshooting
 
 If you have problems or the downloader crashes, run it again with `-l` on the end of the command to log the HTTP requests and responses to a log file.  After the problem happens again, create an Issue on this repository and attach your log file so that we can troubleshoot and fix the bug.
