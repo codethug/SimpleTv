@@ -41,7 +41,7 @@ The default filename that files have is
  
     {ShowName} - S{SeasonNumber00}E{EpisodeNumber00} - {EpisodeName}.mp4
 
-In the example aboe, this results in
+In the example above, this results in
 
     NCIS - S03E10 - Probie.mp4
  
