@@ -4,7 +4,6 @@ using SimpleTvSdk.Tests.Helpers;
 using SimpleTv.Sdk.Http;
 using HtmlAgilityPack;
 using FluentAssertions;
-using System.Linq;
 
 namespace SimpleTv.Sdk.Tests
 {
@@ -27,7 +26,7 @@ namespace SimpleTv.Sdk.Tests
         }
 
         [TestMethod]
-        public void ParseEpisode_ShouldParseEpisode()
+        public void ParseEpisode_ShouldParseName()
         {
             // Arrange
             var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
@@ -62,5 +61,109 @@ namespace SimpleTv.Sdk.Tests
             episodes[0].InstanceId.Should().BeEmpty();
         }
 
+        [TestMethod]
+        public void ParseEpisode_ShouldParseDescription()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].Description.Should().Be("In this great episode, amazing things happen");
+        }
+
+        [TestMethod]
+        public void ParseEpisode_ShouldParseSeasonNumber()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].SeasonNumber.Should().Be(1);
+        }
+
+        [TestMethod]
+        public void ParseEpisode_ShouldParseEpisodeNumber()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].EpisodeNumber.Should().Be(3);
+        }
+
+        [TestMethod]
+        public void ParseEpisode_ShouldParseEpisodeId()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].Id.Should().Be(new Guid("6bbf69eb-5944-11e5-b06f-22000b688027"));
+        }
+
+        [TestMethod]
+        public void ParseEpisode_ShouldParseInstanceId()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].InstanceId.Should().Be(new Guid("20f69334-5948-11e5-b06f-22000b688027"));
+        }
+
+        [TestMethod]
+        public void ParseEpisodes_ShouldParseDateTime()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].DateTime.Should().Be(24.September(2015).At(20,00));
+        }
+
+        [TestMethod]
+        public void ParseEpisodes_ShouldParseChannelNumber()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("HtmlParserExtensions.HtmlData.MainPage1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null, null);
+
+            // Assert
+            episodes[0].ChannelNumber.Should().Be("15.1");
+        }
     }
 }

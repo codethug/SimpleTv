@@ -2,9 +2,8 @@
 using SimpleTv.Sdk.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleTv.Sdk.Http
 {
@@ -53,6 +52,58 @@ namespace SimpleTv.Sdk.Http
             return mediaServers;
         }
 
+        /// <summary>
+        /// Finds substring of string starting at startIndex and ending just before
+        /// the first instance of termination
+        /// </summary>
+        /// <param name="startIndex"></param>
+        /// <param name="termination"></param>
+        /// <returns></returns>
+        private static string Substring(this string input, int startIndex, string termination) {
+            var terminationIndex = input.IndexOf(termination, startIndex);
+            if (terminationIndex == -1)
+            {
+                return input.Substring(startIndex);
+            }
+            else
+            {
+                return input.Substring(startIndex, terminationIndex);
+            }
+        }
+
+
+        /// <summary>
+        /// Parses a date time string from Simple.Tv.
+        /// The difficulty is that we're not sure what the year is.  We currently assume
+        /// that it is for the current year as long as the date provided happened earlier in
+        /// the year than today's date.
+        /// 
+        /// This function will return incorrect data for any recordings made more than 1 year ago
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns>DateTime object</returns>
+        /// <example>Input: Thursday, September 24 at 8:00 PM</example>
+        private static DateTime? ParseAsDateTimeWithoutYear(this string input)
+        {
+            // First, strip out the day of week
+            var inputNoDayOfWeek = input.Substring(input.IndexOf(",") + 2);
+            // Next, create the date object (defaults to this year)
+            DateTime parsedDate;
+            if (!DateTime.TryParseExact(inputNoDayOfWeek, "MMMM d 'at' h:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out parsedDate))
+            {
+                return null;
+            }
+
+            if (parsedDate > DateTime.Now)
+            {
+                return parsedDate.AddYears(-1);
+            }
+            else
+            {
+                return parsedDate;
+            }
+        }
+
         public static List<Episode> ParseEpisodes(this HtmlDocument html, Show show, SimpleTvHttpClient client)
         {
             return html.GetElementbyId("recorded")
@@ -70,7 +121,16 @@ namespace SimpleTv.Sdk.Http
                     SeasonNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault()
                         .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
                     EpisodeNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault()
-                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim()))
+                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
+
+                    ChannelNumber = article.SelectClass("show-details-info").SelectTag("b").FirstOrDefault()
+                        .IfNotNull(e => e.InnerText.Trim()),
+                    DateTime = article.SelectClass("show-details-info").FirstOrDefault()
+                        .IfNotNull(e => e
+                            .InnerHtml
+                            .Substring(0,"&nbsp;").Trim()
+                            .ParseAsDateTimeWithoutYear()
+                        )
                 }).ToList();
         }
 
