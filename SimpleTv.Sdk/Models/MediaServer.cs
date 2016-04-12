@@ -47,7 +47,7 @@ namespace SimpleTv.Sdk.Models
         {
             get
             {
-                return UseLocalStream ? LocalStreamBaseUrl : RemoteStreamBaseUrl;
+                return (UseLocalStream ? LocalStreamBaseUrl : RemoteStreamBaseUrl);
             }
         }
     }

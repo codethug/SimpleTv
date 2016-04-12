@@ -7,6 +7,13 @@ namespace SimpleTv.Sdk.Http
 {
     public static class HttpDocumentExtensions
     {
+        public static HtmlDocument AsHtmlDocument(this string rawResponse)
+        {
+            var html = new HtmlDocument();
+            html.LoadHtml(rawResponse);
+            return html;
+        }
+
         public static IEnumerable<HtmlNode> SelectClass(this IEnumerable<HtmlNode> nodes, string className) {
             return nodes.Where(n => 
                 n.GetAttributeValue("class", "").Equals(className));
@@ -31,12 +38,5 @@ namespace SimpleTv.Sdk.Http
         {
             return node.Descendants(tag);
         }
-
-        public static IEnumerable<HtmlNode> SelectTag(this HtmlDocument doc, string tag)
-        {
-            return doc.DocumentNode.SelectTag(tag);
-        }
-
-
     }
 }

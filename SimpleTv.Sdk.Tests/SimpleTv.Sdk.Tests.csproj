@@ -6,8 +6,8 @@
     <ProjectGuid>{05EDE488-BB38-47E0-9C1A-EFE1E6726F85}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleTvSdk.Tests</RootNamespace>
-    <AssemblyName>SimpleTvSdk.Tests</AssemblyName>
+    <RootNamespace>SimpleTv.Sdk.Tests</RootNamespace>
+    <AssemblyName>SimpleTv.Sdk.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -72,16 +72,17 @@
   <ItemGroup>
     <Compile Include="Helpers\SampleData.cs" />
     <Compile Include="Helpers\TestingFolder.cs" />
-    <Compile Include="HtmlParserExtensions\HtmlParserExtensionsTests.cs" />
+    <Compile Include="Http\HtmlDocumentClientTests.cs" />
+    <Compile Include="Http\HtmlParserExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShowNamerExtensions\ShowNamerTests.cs" />
-    <Compile Include="ShowNamerExtensions\PathCleanerTests.cs" />
+    <Compile Include="Naming\ShowNamerTests.cs" />
+    <Compile Include="Naming\PathCleanerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HtmlParserExtensions\HtmlData\MainPage1.html" />
+    <EmbeddedResource Include="Http\TestData\MainPage1.html" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimpleTv.Sdk\SimpleTv.Sdk.csproj">
@@ -90,7 +91,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="HtmlParserExtensions\HtmlData\MainPage2.html" />
+    <EmbeddedResource Include="Http\TestData\MainPage2.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Http\TestData\MainPage3.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Http\TestData\MainPage4.html" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

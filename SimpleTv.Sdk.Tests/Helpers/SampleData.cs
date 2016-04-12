@@ -15,7 +15,7 @@ namespace SimpleTvSdk.Tests.Helpers
 
             string result = string.Empty;
 
-            var name = "SimpleTvSdk.Tests." + filename;
+            var name = "SimpleTv.Sdk.Tests." + filename;
             using (Stream stream = (new SampleData()).GetType().Assembly.GetManifestResourceStream(name))
             {
                 using (StreamReader sr = new StreamReader(stream))

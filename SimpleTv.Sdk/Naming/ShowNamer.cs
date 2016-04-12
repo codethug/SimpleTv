@@ -24,7 +24,7 @@ namespace SimpleTv.Sdk.Naming
             );
 
             var fileName = fileNameTemplate.ReplaceWithTokens(tokens, PathCleaner.CleanFileName);
-            var sequenceToken = "{nnnn}";
+            var sequenceToken = "{nnnn}";   
             if (fileName.Contains(sequenceToken))
             {
                 var maxNum = GetMaxNumberedFileName(folder, fileName, sequenceToken);

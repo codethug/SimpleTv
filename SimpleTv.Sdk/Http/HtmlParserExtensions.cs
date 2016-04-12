@@ -30,9 +30,8 @@ namespace SimpleTv.Sdk.Http
             //	    <a data-value="49535352-5453-3156-0005-100000001576" class="current-dvr my-dvr">Family Room</a>
             //    </li>
             //  </ul>
-            var switchDvrList = html.SelectClass("switch-dvr-list");
-
-            var mediaServers = switchDvrList
+            return html
+                .SelectClass("switch-dvr-list")
                 .SelectTag("a")
                 .Select(a =>
                     new MediaServer(client)
@@ -48,8 +47,31 @@ namespace SimpleTv.Sdk.Http
                         RegisteredToCurrentAccount = Boolean.Parse(watchShowAttributes["data-registeredtocurrentaccount"].Value)
                     }
                 ).ToList();
+        }
 
-            return mediaServers;
+        public static List<Show> ParseShows(this HtmlDocument html, MediaServer server, SimpleTvHttpClient client)
+        {
+            //	<section class="my-shows-list">
+            //		<figure data-groupid="c868a1ab-468f-11e5-b06f-22000b688027">
+            //			<div class="thumbnail-showcard">
+            //				<img onerror="showAlternateImage(this, 'http://s3.amazonaws.com/simpletv/image/noimage_group_20004.png')" alt="Heroes Reborn" src="http://simp.tmsimg.com/assets/p10578128_b_h6_ab.jpg" />	
+            //			</div>
+            //			<figcaption>
+            //				<b>Heroes Reborn</b>
+            //				<span class="no">12</span> recorded <span>shows</span>
+            //			</figcaption>
+            //	    </figure>
+            //		<figure data-groupid="0912f1a0-2a19-4cfd-879c-6b62d6567ff3">
+            //		<figure data-groupid="e6df63ed-e6b5-4bec-93e6-358ed8b5e656">
+            //		<figure data-groupid="a56223cb-df08-11e3-ae60-22000b278f17">
+            return html.SelectClass("my-shows-list")
+                .SelectTag("figure")
+                .Select(f => new Show(client, server)
+                {
+                    Id = new Guid(f.Attributes["data-groupid"].Value),
+                    Name = f.SelectTag("b").First().InnerText,
+                    NumEpisodes = Int32.Parse(f.SelectClass("no").First().InnerText)
+                }).ToList();
         }
 
         /// <summary>

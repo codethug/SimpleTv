@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SimpleTv.Sdk.Naming
@@ -16,6 +17,11 @@ namespace SimpleTv.Sdk.Naming
             return path
                 .RemoveCharacters(Path.GetInvalidPathChars())
                 .RemoveCharacters(customInvalidChars);
+        }
+
+        public static string RegexReplace(this string input, string pattern, string replacement)
+        {
+            return Regex.Replace(input, pattern, replacement);
         }
 
         public static string CleanFileName(this string path)

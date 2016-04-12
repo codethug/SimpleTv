@@ -12,13 +12,16 @@ using NodaTime;
 
 using SimpleTv.Sdk.Models;
 using SimpleTv.Sdk.Diagnostics;
+using SimpleTv.Sdk.Naming;
+using System.Collections.Specialized;
 
 namespace SimpleTv.Sdk.Http
 {
     public class SimpleTvHttpClient
     {
         private const string simpleTvBaseUrl = "https://us.simple.tv";
-        private readonly CookieAwareWebClient client;
+        private readonly IWebClient webClient;
+        private readonly HtmlDocumentClient docClient;
         private IClock clock;
         Object sync;
         private IDateTimeZoneProvider dtzProvider;
@@ -26,25 +29,21 @@ namespace SimpleTv.Sdk.Http
         internal SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider)
         {
             sync = new Object();
-            client = new CookieAwareWebClient();
+
+            this.webClient = new CookieAwareWebClient();
+            webClient.DownloadProgressChanged += Client_DownloadProgressChanged;
+            webClient.DownloadFileCompleted += Client_DownloadFileCompleted;
+            docClient = new HtmlDocumentClient(webClient);
+
             this.clock = clock;
             this.dtzProvider = dtzProvider;
         }
 
-        public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived;
-        protected virtual void OnHttpResponseReceived(HttpData data)
+        public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived
         {
-            if (HttpResponseReceived != null)
-            {
-                var eventArgs = new HttpResponseReceivedEventArgs()
-                {
-                    HttpData = data,
-                    Timestamp = DateTime.UtcNow
-                };
-                HttpResponseReceived(this, eventArgs);
-            }
+            add { docClient.HttpResponseReceived += value; }
+            remove { docClient.HttpResponseReceived -= value; }
         }
-
 
         private int BrowserUTCOffsetMinutes
         {
@@ -73,27 +72,16 @@ namespace SimpleTv.Sdk.Http
         // Keep cookies for future requests
         internal bool Login(string un, string pw)
         {
-            var description = "Logging In";
-            Console.WriteLine(description);
-            // Perform Login
-            client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-            var rawResponse = client.UploadString(
-                simpleTvBaseUrl + "/Auth/SignIn",
-                string.Format(
-                    "InvitationKey=&UserName={0}&Password={1}&RememberMe=false&browserDateTime={2}",
-                    HttpUtility.UrlEncode(un),
-                    HttpUtility.UrlEncode(pw),
-                    HttpUtility.UrlEncode(BrowserDateTimeUTC)));
-
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = simpleTvBaseUrl + "/Auth/SignIn",
-                HttpVerb = "POST",
-                Response = rawResponse
+            var uri = new Uri(simpleTvBaseUrl + "/Auth/SignIn");
+            var rawResponse = docClient.PostRawReponse(uri, "Logging In", new NameValueCollection {
+                { "InvitationKey", string.Empty },
+                { "UserName", un },
+                { "Password", pw },
+                { "RememberMe", false.ToString() },
+                { "browserDateTime", BrowserDateTimeUTC }
             });
 
-            // Bad Login:
+            // Bad Login looks like this:
             // HTTP 200     {"SignInError":"Email Address or Password is incorrect."}
             dynamic response = Newtonsoft.Json.JsonConvert.DeserializeObject(rawResponse);
             if (response.SignInError != null)
@@ -105,48 +93,26 @@ namespace SimpleTv.Sdk.Http
 
         internal List<MediaServer> GetMediaServers()
         {
-            var description = "Loading Media Servers";
-            Console.WriteLine(description);
-            var url = "http://us-my.simple.tv";
-            var response = client.DownloadString(url);
-
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = url,
-                HttpVerb = "GET",
-                Response = response
-            });
-
-            var html = new HtmlDocument();
-            html.LoadHtml(response);
-            var mediaServers = html.ParseMediaServers(this);
-            return mediaServers.Where(ms =>
-            {
-                // Find out where the DVR is on the internet/network
-                LocateMediaServer(ms);
-                // Ensure we can actually communicate with the DVR
-                return TestMediaServerLocations(ms);
-            }).ToList();
+            return docClient.GetDocument(new Uri("http://us-my.simple.tv"), "Loading Media Servers")
+                .ParseMediaServers(this)
+                .Where(ms =>
+                {
+                    // Find out where the DVR is on the internet/network
+                    LocateMediaServer(ms);
+                    // Ensure we can actually communicate with the DVR
+                    return TestMediaServerLocations(ms);
+                })
+                .ToList();
         }
 
         private MediaServer LocateMediaServer(MediaServer server)
         {
             var description = "Locating Media Server \"" + server.Name + "\"";
-            Console.WriteLine(description);
             var urlTemplate = "https://us-my.simple.tv/Data/RealTimeData?accountId={0}&mediaServerId={1}&playerAlternativeAvailable=false";
 
-            var url = string.Format(urlTemplate, server.AccountId, server.Id);
-            var rawResponse = client.DownloadString(url);
+            var url = new Uri(string.Format(urlTemplate, server.AccountId, server.Id));
+            var rawResponse = docClient.GetRaw(url, description);
             dynamic response = Newtonsoft.Json.JsonConvert.DeserializeObject(rawResponse);
-
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = url,
-                HttpVerb = "GET",
-                Response = rawResponse
-            });
 
             // {
             //     "MediaServerId": "49535352-5453-3156-0005-100000001576",
@@ -214,7 +180,7 @@ namespace SimpleTv.Sdk.Http
         {
             try
             {
-                client.DownloadData(url);
+                docClient.GetRaw(new Uri(url));
             }
             catch (WebException we)
             {
@@ -229,113 +195,51 @@ namespace SimpleTv.Sdk.Http
 
         internal List<Show> GetShows(MediaServer server)
         {
-            var description = "Loading shows on " + server.Name;
-            Console.WriteLine(description);
             var urlTemplate = "https://us-my.simple.tv/Library/MyShows?browserDateTimeUTC={0}&mediaServerID={1}&browserUTCOffsetMinutes={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, server.Id, BrowserUTCOffsetMinutes);
 
-            var response = client.DownloadString(url);
-            var html = new HtmlDocument();
-            html.LoadHtml(response);
-
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = url,
-                HttpVerb = "GET",
-                Response = response
-            });
-
-            //	<section class="my-shows-list">
-            //		<figure data-groupid="c868a1ab-468f-11e5-b06f-22000b688027">
-            //			<div class="thumbnail-showcard">
-            //				<img onerror="showAlternateImage(this, 'http://s3.amazonaws.com/simpletv/image/noimage_group_20004.png')" alt="Heroes Reborn" src="http://simp.tmsimg.com/assets/p10578128_b_h6_ab.jpg" />	
-            //			</div>
-            //			<figcaption>
-            //				<b>Heroes Reborn</b>
-            //				<span class="no">12</span> recorded <span>shows</span>
-            //			</figcaption>
-            //	    </figure>
-            //		<figure data-groupid="0912f1a0-2a19-4cfd-879c-6b62d6567ff3">
-            //		<figure data-groupid="e6df63ed-e6b5-4bec-93e6-358ed8b5e656">
-            //		<figure data-groupid="a56223cb-df08-11e3-ae60-22000b278f17">
-
-            var shows = html
-                .SelectClass("my-shows-list")
-                .SelectTag("figure")
-                .Select(f => new Show(this, server)
-                {
-                    Id = new Guid(f.Attributes["data-groupid"].Value),
-                    Name = f.SelectTag("b").First().InnerText,
-                    NumEpisodes = Int32.Parse(f.SelectClass("no").First().InnerText)
-                }).ToList();
-
-            return shows;
+            return docClient
+                .GetDocument(new Uri(url), "Loading shows on " + server.Name)
+                .ParseShows(server, this);
         }
 
         internal List<Episode> GetEpisodes(Show show)
         {
-            var description = "Loading episodes of " + show.Name;
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/ShowDetail?browserDateTimeUTC={0}&browserUTCOffsetMinutes={1}&groupID={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, BrowserUTCOffsetMinutes, show.Id);
 
-            var response = client.DownloadString(url);
-            var html = new HtmlDocument();
-            html.LoadHtml(response);
-
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = url,
-                HttpVerb = "GET",
-                Response = response
-            });
-
-            return html.ParseEpisodes(show, this);
+            return docClient
+                .GetDocument(new Uri(url), "Loading episodes of " + show.Name)
+                .ParseEpisodes(show, this);
         }
-
 
         internal string GetEpisodeLocation(Episode episode)
         {
-            var description = "Finding Episode " + episode.EpisodeName;
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
             var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.show.Id, episode.Id, episode.InstanceId);
 
-            var response = client.DownloadString(url);
-            var html = new HtmlDocument();
-            html.LoadHtml(response);
+            return docClient.GetDocument(new Uri(url), "Finding Episode " + episode.EpisodeName)
 
-            OnHttpResponseReceived(new HttpData()
-            {
-                Description = description,
-                RequestedUrl = url,
-                HttpVerb = "GET",
-                Response = response
-            });
+                // 	<div id="video-player-large" data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" data-denystreaming="false" data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
+                .GetElementbyId("video-player-large")
+                .Attributes["data-streamlocation"].Value
 
-            // 	<div id="video-player-large" data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" data-denystreaming="false" data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
-
-            var fileLocation = html.GetElementbyId("video-player-large")
-                .Attributes["data-streamlocation"].Value;
-
-            // regex = /tv.main.hls-(\1\d).m3u8/;
-            // url = (baseStreamUrl + streamLocation).replace(regex, "tv.4500000.10\$1")
-            string pattern = @"tv\.main\.hls-(\d)\.m3u8";
-            string replacement = @"tv.4500000.10$1";
-            var correctedFileLocation = Regex.Replace(fileLocation, pattern, replacement);
-            return correctedFileLocation;
+                // regex = /tv.main.hls-(\1\d).m3u8/;
+                // url = (baseStreamUrl + streamLocation).replace(regex, "tv.4500000.10\$1")
+                .RegexReplace(@"tv\.main\.hls-(\d)\.m3u8", @"tv.4500000.10$1")
+                
+                // Remove leading '/'
+                .TrimStart(new char[] { '/' });
         }
 
         internal void Download(Episode episode, string fileName)
         {
-            var fullPathToVideo = episode.show.server.StreamBaseUrl + GetEpisodeLocation(episode);
+            var fullPathToVideo = episode.show.server.StreamBaseUrl + "/" + GetEpisodeLocation(episode);
             var description = "Downloading " + fullPathToVideo + " to " + fileName;
             Console.WriteLine(description);
 
-            client.DownloadProgressChanged += Client_DownloadProgressChanged;
-            client.DownloadFileCompleted += Client_DownloadFileCompleted;
 
             var directory = Path.GetDirectoryName(fileName);
             Directory.CreateDirectory(directory);
@@ -343,13 +247,10 @@ namespace SimpleTv.Sdk.Http
             var syncObj = new Object();
             lock (syncObj)
             {
-                client.DownloadFileAsync(new Uri(fullPathToVideo), fileName, syncObj);
-                //This would block the thread until download completes
+                webClient.DownloadFileAsync(new Uri(fullPathToVideo), fileName, syncObj);
+                // This will wait until the download completes
                 Monitor.Wait(syncObj);
             }
-
-            client.DownloadFileCompleted -= Client_DownloadFileCompleted;
-            client.DownloadProgressChanged -= Client_DownloadProgressChanged;
         }
 
         private void Client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
