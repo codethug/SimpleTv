@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 
 namespace SimpleTv.Downloader
 {
@@ -35,7 +36,14 @@ namespace SimpleTv.Downloader
 
         public void SaveHttpLogs(string error)
         {
-            var data = JsonConvert.SerializeObject(new { error = error, http = httpLogs });
+            var data = JsonConvert.SerializeObject(new {
+                what = new {
+                    name = "SimpleTV Downloader Logs",
+                    version = Assembly.GetExecutingAssembly().GetName().Version.ToString(),
+                },
+                error = error,
+                http = httpLogs
+            });
             var fileName = string.Format("SimpleTv.DownloadLog.{0:yyyy-MM-dd_HH-mm-ss}.json.txt", DateTime.UtcNow);
 
             // First try the current directory
