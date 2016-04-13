@@ -3,6 +3,7 @@
 using Fclp;
 using System.IO;
 using SimpleTv.Sdk.Diagnostics;
+using System.Reflection;
 
 namespace SimpleTv.Downloader
 {
@@ -76,37 +77,43 @@ namespace SimpleTv.Downloader
             // Later on, -d / -dryrun will be used to do a dry run (parsing without downloading)
             p.Setup(arg => arg.DownloadFolder)
                 .As('d', "downloadfolder")
-                .WithDescription("Please use the f / folder parameter instead of d / downloadfolder.");
+                .WithDescription("[unsupported] Please use the f / folder parameter instead of d / downloadfolder.");
 
             p.Setup(arg => arg.Folder)
                 .As('f', "folder")
-                .WithDescription("Folder to place downloaded recordings in.  Defaults to current working directory.")
+                .WithDescription("[optional] Folder to place downloaded recordings in.  Defaults to current working directory.")
                 .SetDefault(Directory.GetCurrentDirectory());
 
             p.Setup(arg => arg.ShowFilter)
                 .As('s', "showFilter")
-                .WithDescription("Type in which show you want to download.  Wildcards accepted.  Will download all shows if this parameter is missing.")
+                .WithDescription("[optional] Type in which show you want to download.  Wildcards accepted.")
                 .SetDefault("*");
 
             p.Setup(arg => arg.FolderFormat)
                 .As('r', "folderformat")
-                .WithDescription("The folder format for saving the recording, relative to the downloadfolder.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
+                .WithDescription("[optional] The folder format for saving the recording, relative to the downloadfolder.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
                 .SetDefault("{ShowName}\\Season {SeasonNumber00}");
 
             p.Setup(arg => arg.FilenameFormat)
                 .As('n', "filenameformat")
-                .WithDescription("The filename format for saving the recording.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
+                .WithDescription("[optional] The filename format for saving the recording.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
                 .SetDefault("{ShowName} - S{SeasonNumber00}E{EpisodeNumber00} - {EpisodeName}.mp4");
 
             p.Setup(arg => arg.LogHttpCalls)
                 .As('l', "logHttpCalls")
-                .WithDescription("Will save a log of all http calls, helpful for debugging errors")
+                .WithDescription("[optional] Will save a log of all http calls, helpful for debugging errors")
                 .SetDefault(false);
 
             p.SetupHelp("?", "help")
-                .WithHeader(execName + " is used to download your Simple.Tv recordings.  \r\nUsage:\r\n" +
-                    "\t" + execName + " -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows -s \"NCIS*\""
-                )
+                .WithHeader(string.Format(
+                    "SimpleTV Downloader\n" + 
+                    "Version {0}\n" +
+                    "\n" +
+                    "SimpleTV Downloader can download your Simple.Tv recordings.  \r\n" +
+                    "Usage:\r\n" +
+                    "\t{1} -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows -s \"NCIS*\"",
+                    Assembly.GetExecutingAssembly().GetName().Version, execName
+                ))
                 .Callback(text => Console.WriteLine(text));
 
             return p;
