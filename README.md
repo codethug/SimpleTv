@@ -1,5 +1,7 @@
 # Simple.TV Downloader
 
+[![Build status](https://ci.appveyor.com/api/projects/status/pfwj1adp499h6yco?svg=true)](https://ci.appveyor.com/project/codethug/simpletv)
+
 If you have a [Simple.TV](https:/www.simple.tv) and want to copy your recordings from your Simple.TV, this project
 is for you.  When run, SimpleTV Downloader will download all recordings to a directory you specify.  Use it like this:
 
