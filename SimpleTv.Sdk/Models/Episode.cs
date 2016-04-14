@@ -7,11 +7,9 @@ namespace SimpleTv.Sdk.Models
 {
     public class Episode
     {
-        private SimpleTvHttpClient _client;
         internal Show show;
-        public Episode(SimpleTvHttpClient client, Show show)
+        public Episode(Show show)
         {
-            this._client = client;
             this.show = show;
         }
 

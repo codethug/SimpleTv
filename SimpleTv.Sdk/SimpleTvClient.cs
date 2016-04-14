@@ -47,6 +47,16 @@ namespace SimpleTv.Sdk
             }
         }
 
+        public List<Show> GetShows(MediaServer server)
+        {
+            return _client.GetShows(server);
+        }
+
+        public List<Episode> GetEpisodes(Show show)
+        {
+            return _client.GetEpisodes(show);
+        }
+
         public void DownloadEpisode(Episode episode)
         {
             var fileName = episode.GenerateFileName(config.DownloadFolder, config.FolderFormat, config.FilenameFormat);

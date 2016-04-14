@@ -18,10 +18,10 @@ namespace SimpleTv.Sdk.Tests.Naming
         {
             // Arrange
             var allShows = new Show[] {
-                new Show(null, null) { Name = "AA1" },
-                new Show(null, null) { Name = "AA2" },
-                new Show(null, null) { Name = "BB1" },
-                new Show(null, null) { Name = "BB2" },
+                new Show(null) { Name = "AA1" },
+                new Show(null) { Name = "AA2" },
+                new Show(null) { Name = "BB1" },
+                new Show(null) { Name = "BB2" },
             };
 
             // Act 
@@ -38,10 +38,10 @@ namespace SimpleTv.Sdk.Tests.Naming
         {
             // Arrange
             var allShows = new Show[] {
-                new Show(null, null) { Name = "AA1" },
-                new Show(null, null) { Name = "AA2" },
-                new Show(null, null) { Name = "BB1" },
-                new Show(null, null) { Name = "BB2" },
+                new Show(null) { Name = "AA1" },
+                new Show(null) { Name = "AA2" },
+                new Show(null) { Name = "BB1" },
+                new Show(null) { Name = "BB2" },
             };
 
             // Act 

@@ -7,26 +7,6 @@ namespace SimpleTv.Sdk.Models
 {
     public class MediaServer
     {
-        private SimpleTvHttpClient _client;
-
-        public MediaServer(SimpleTvHttpClient client)
-        {
-            this._client = client;
-        }
-
-        private List<Show> _shows;
-        public List<Show> Shows
-        {
-            get
-            {
-                if (_shows == null)
-                {
-                    _shows = _client.GetShows(this);
-                }
-                return _shows;
-            }
-        }
-
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid AccountId { get; set; }

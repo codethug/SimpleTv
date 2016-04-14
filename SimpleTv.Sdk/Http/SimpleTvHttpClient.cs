@@ -211,7 +211,7 @@ namespace SimpleTv.Sdk.Http
 
             return docClient
                 .GetDocument(new Uri(url), "Loading episodes of " + show.Name)
-                .ParseEpisodes(show, this);
+                .ParseEpisodes(show);
         }
 
         public string GetEpisodeLocation(Episode episode)

@@ -73,17 +73,20 @@ namespace SimpleTv.Downloader
                 {
                     foreach (var server in client.MediaServers)
                     {
-                        var filteredShows = server.Shows
+                        var filteredShows = client
+                            .GetShows(server)
                             .IncludeOnly(config.IncludeFilter)
                             .Exclude(config.ExcludeFilter);
 
                         Console.WriteLine();
                         foreach (var show in filteredShows)
                         {
-                            Console.WriteLine(string.Format("Downloading {0} episodes of {1}", show.Episodes.Count, show.Name));
+                            var episodes = client.GetEpisodes(show);
+
+                            Console.WriteLine(string.Format("Downloading {0} episodes of {1}", episodes.Count, show.Name));
                             Console.WriteLine("=======================================================");
 
-                            foreach (var episode in show.Episodes)
+                            foreach (var episode in episodes)
                             {
                                 client.DownloadEpisode(episode);
                             }

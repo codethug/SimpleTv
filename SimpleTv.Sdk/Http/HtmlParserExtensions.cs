@@ -36,7 +36,7 @@ namespace SimpleTv.Sdk.Http
                 .SelectClass("switch-dvr-list")
                 .SelectTag("a")
                 .Select(a =>
-                    new MediaServer(client)
+                    new MediaServer()
                     {
                         Id = new Guid(a.Attributes["data-value"].Value),
                         Name = a.InnerText,
@@ -68,7 +68,7 @@ namespace SimpleTv.Sdk.Http
             //		<figure data-groupid="a56223cb-df08-11e3-ae60-22000b278f17">
             return html.SelectClass("my-shows-list")
                 .SelectTag("figure")
-                .Select(f => new Show(client, server)
+                .Select(f => new Show(server)
                 {
                     Id = new Guid(f.Attributes["data-groupid"].Value),
                     Name = f.SelectTag("b").First().InnerText,
@@ -128,11 +128,11 @@ namespace SimpleTv.Sdk.Http
             }
         }
 
-        public static List<Episode> ParseEpisodes(this HtmlDocument html, Show show, SimpleTvHttpClient client)
+        public static List<Episode> ParseEpisodes(this HtmlDocument html, Show show)
         {
             return html.GetElementbyId("recorded")
                 .SelectTag("article")
-                .Select(article => new Episode(client, show)
+                .Select(article => new Episode(show)
                 {
                     Id = article.SelectTag("a").FirstOrDefault()
                         .IfNotNull(e => new Guid(e.Attributes["data-itemid"].Value)),

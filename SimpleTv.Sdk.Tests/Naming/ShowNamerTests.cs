@@ -18,7 +18,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         public void GenerateFileName_ShouldNotStripOutDriveColonAndSlash()
         {
             // Arrange
-            var episode = new Episode(null, new Show(null, null));
+            var episode = new Episode(new Show(null));
             var baseFolder = @"F:\";
             var folderFormat = "folder";
             var fileNameFormat = "file";
@@ -36,7 +36,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             using (var baseFolder = new TestingFolder())
             {
-                var episode = new Episode(null, null);
+                var episode = new Episode(null);
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
                 var token = "{nnnn}";
@@ -59,7 +59,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             using (var baseFolder = new TestingFolder())
             {
-                var episode = new Episode(null, null);
+                var episode = new Episode(null);
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
                 var token = "{nnnn}";
@@ -141,7 +141,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         public void GenerateTokens_ShouldGenerateChannelNumberFromEpisode()
         {
             // Arrange
-            var episode = new Episode(null, null)
+            var episode = new Episode(null)
             {
                 ChannelNumber = "97523.12345"
             };
@@ -157,7 +157,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         public void GenerateTokens_ShouldGenerateDateTimeFromEpisode()
         {
             // Arrange
-            var episode = new Episode(null, null)
+            var episode = new Episode(null)
             {
                 DateTime = new DateTime(2000, 08, 15, 16, 53, 00)
             };
