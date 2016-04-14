@@ -210,7 +210,7 @@ namespace SimpleTv.Sdk.Http
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, BrowserUTCOffsetMinutes, show.Id);
 
             return docClient
-                .GetDocument(new Uri(url), string.Format("Loading episodes of \"{0}\"", show.Name))
+                .GetDocument(new Uri(url), string.Format("Loading episodes for \"{0}\"", show.Name))
                 .ParseEpisodes(show);
         }
 

@@ -83,7 +83,8 @@ namespace SimpleTv.Downloader
                         {
                             var episodes = client.GetEpisodes(show);
 
-                            Console.WriteLine(string.Format("Downloading {0} episodes of \"{1}\"", episodes.Count, show.Name));
+                            Console.WriteLine(string.Format("Downloading {0} episode{1} of \"{2}\"", 
+                                episodes.Count, episodes.Count == 1 ? string.Empty : "s", show.Name));
                             Console.WriteLine("=======================================================");
 
                             foreach (var episode in episodes)
