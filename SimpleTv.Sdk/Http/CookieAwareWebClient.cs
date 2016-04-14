@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 
 namespace SimpleTv.Sdk.Http
@@ -21,6 +22,14 @@ namespace SimpleTv.Sdk.Http
                 request.CookieContainer = CookieContainer;
             }
             return request;
+        }
+
+        public long GetFileSize(Uri address)
+        {
+            using (var s = OpenRead(address))
+            {
+                return long.Parse(ResponseHeaders["Content-Length"].ToString());
+            }
         }
     }
 }

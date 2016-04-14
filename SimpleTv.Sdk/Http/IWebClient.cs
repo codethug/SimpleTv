@@ -16,5 +16,7 @@ namespace SimpleTv.Sdk.Http
         event DownloadProgressChangedEventHandler DownloadProgressChanged;
         event AsyncCompletedEventHandler DownloadFileCompleted;
         void DownloadFileAsync(Uri address, string fileName, object userToken);
+
+        long GetFileSize(Uri address);
     }
 }

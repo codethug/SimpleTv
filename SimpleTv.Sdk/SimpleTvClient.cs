@@ -60,10 +60,12 @@ namespace SimpleTv.Sdk
         public void DownloadEpisode(Episode episode)
         {
             var fileName = episode.GenerateFileName(config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
-            var fullPathToVideo = episode.Show.Server.StreamBaseUrl + _client.GetEpisodeLocation(episode); ;
+            var fullPathToVideo = new Uri(episode.Show.Server.StreamBaseUrl + _client.GetEpisodeLocation(episode));
 
-            _client.Download(fullPathToVideo, fileName);
+            if (_client.IsBigEnoughToDownload(fullPathToVideo, 1024*1024, episode.EpisodeName))
+            {
+                _client.Download(fullPathToVideo, fileName, episode.EpisodeName);
+            }
         }
-
     }
 }

@@ -26,7 +26,7 @@ namespace SimpleTv.Sdk.Http
         Object sync;
         private IDateTimeZoneProvider dtzProvider;
 
-        internal SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider, IWebClient webClient, IHtmlDocumentClient docClient)
+        public SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider, IWebClient webClient, IHtmlDocumentClient docClient)
         {
             sync = new Object();
 
@@ -224,18 +224,32 @@ namespace SimpleTv.Sdk.Http
                 .ParseEpisodeLocation();
         }
 
-        internal void Download(string fullPathToVideo, string fileName)
+        public bool IsBigEnoughToDownload(Uri uri, int sizeInBytes, string episodeName)
         {
-            var description = string.Format("Downloading {0} to {1}", fullPathToVideo, fileName);
-            Console.WriteLine(description);
+            var fileSize = webClient.GetFileSize(uri);
+            if (fileSize < sizeInBytes)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("{0} appears to be empty (filesize is {1} KB), so I'm skipping this episode",
+                    episodeName, fileSize / 1024);
+                Console.ResetColor();
+                return false;
+            }
+            return true;
+        }
 
-            var directory = Path.GetDirectoryName(fileName);
-            Directory.CreateDirectory(directory);
-
+        internal void Download(Uri fullPathToVideo, string fileName, string episodeName)
+        {
             var syncObj = new Object();
             lock (syncObj)
             {
-                webClient.DownloadFileAsync(new Uri(fullPathToVideo), fileName, syncObj);
+                var description = string.Format("Downloading \"{0}\" to {1}", episodeName, fileName);
+                Console.WriteLine(description);
+
+                var directory = Path.GetDirectoryName(fileName);
+                Directory.CreateDirectory(directory);
+
+                webClient.DownloadFileAsync(fullPathToVideo, fileName, syncObj);
                 // This will wait until the download completes
                 Monitor.Wait(syncObj);
             }
@@ -253,7 +267,7 @@ namespace SimpleTv.Sdk.Http
 
         private void Client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            var messageTemplate = "{0}%\t{1}Mb/{2}Mb";
+            var messageTemplate = "{0}%\t{1}/{2}MB";
             var message = string.Format(messageTemplate, e.ProgressPercentage, e.BytesReceived/1024/1024, e.TotalBytesToReceive/1024/1024);
 
             lock (sync)

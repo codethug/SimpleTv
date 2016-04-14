@@ -18,7 +18,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         public void GenerateFileName_ShouldNotStripOutDriveColonAndSlash()
         {
             // Arrange
-            var episode = new Episode();
+            var episode = new Episode() { Show = new Show() { Server = new MediaServer() } };
             var baseFolder = @"F:\";
             var folderFormat = "folder";
             var fileNameFormat = "file";
@@ -61,7 +61,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             using (var baseFolder = new TestingFolder())
             {
-                var episode = new Episode();
+                var episode = new Episode() { Show = new Show() { Server = new MediaServer() } };
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
                 Directory.CreateDirectory(Path.Combine(baseFolder.Location, folderFormat));
@@ -83,7 +83,7 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             using (var baseFolder = new TestingFolder())
             {
-                var episode = new Episode();
+                var episode = new Episode() { Show = new Show() { Server = new MediaServer() } };
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
 
@@ -166,7 +166,8 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             var episode = new Episode()
             {
-                ChannelNumber = "97523.12345"
+                ChannelNumber = "97523.12345",
+                Show = new Show() { Server = new MediaServer() }
             };
 
             // Act
@@ -182,7 +183,8 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
             // Arrange
             var episode = new Episode()
             {
-                DateTime = new DateTime(2000, 08, 15, 16, 53, 00)
+                DateTime = new DateTime(2000, 08, 15, 16, 53, 00),
+                Show = new Show() { Server = new MediaServer() }
             };
 
             // Act
