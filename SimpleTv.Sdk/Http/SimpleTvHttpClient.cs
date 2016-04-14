@@ -218,7 +218,7 @@ namespace SimpleTv.Sdk.Http
         {
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
-            var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.show.Id, episode.Id, episode.InstanceId);
+            var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.Show.Id, episode.Id, episode.InstanceId);
 
             return docClient.GetDocument(new Uri(url), "Finding Episode " + episode.EpisodeName)
                 .ParseEpisodeLocation();

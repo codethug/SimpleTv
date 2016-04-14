@@ -7,15 +7,10 @@ namespace SimpleTv.Sdk.Models
 {
     public class Show
     {
-        internal MediaServer server;
-
-        public Show(MediaServer server)
-        {
-            this.server = server;
-        }
-
         public Guid Id { get; set; } // Group Id
         public string Name { get; set; }
         public int NumEpisodes { get; set; }
+
+        public MediaServer Server { get; set; }
     }
 }

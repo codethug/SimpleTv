@@ -7,12 +7,6 @@ namespace SimpleTv.Sdk.Models
 {
     public class Episode
     {
-        internal Show show;
-        public Episode(Show show)
-        {
-            this.show = show;
-        }
-
         public Guid Id { get; set; }
         public Guid InstanceId { get; set; }
         public string EpisodeName { get; set; }
@@ -22,5 +16,8 @@ namespace SimpleTv.Sdk.Models
 
         public string ChannelNumber { get; set; }
         public DateTime? DateTime { get; set; }
+
+        public Show Show { get; set; }
+
     }
 }

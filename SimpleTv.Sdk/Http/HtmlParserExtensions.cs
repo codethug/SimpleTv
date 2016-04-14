@@ -68,8 +68,10 @@ namespace SimpleTv.Sdk.Http
             //		<figure data-groupid="a56223cb-df08-11e3-ae60-22000b278f17">
             return html.SelectClass("my-shows-list")
                 .SelectTag("figure")
-                .Select(f => new Show(server)
+                .Select(f => new Show()
                 {
+                    Server = server,
+
                     Id = new Guid(f.Attributes["data-groupid"].Value),
                     Name = f.SelectTag("b").First().InnerText,
                     NumEpisodes = Int32.Parse(f.SelectClass("no").First().InnerText)
@@ -132,8 +134,10 @@ namespace SimpleTv.Sdk.Http
         {
             return html.GetElementbyId("recorded")
                 .SelectTag("article")
-                .Select(article => new Episode(show)
+                .Select(article => new Episode
                 {
+                    Show = show,
+
                     Id = article.SelectTag("a").FirstOrDefault()
                         .IfNotNull(e => new Guid(e.Attributes["data-itemid"].Value)),
                     InstanceId = article.SelectTag("a").FirstOrDefault()
