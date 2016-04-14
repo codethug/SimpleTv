@@ -31,6 +31,31 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
         }
 
         [TestMethod]
+        public void GenerateFileName_ShouldGenerateNameWithServerName()
+        {
+            // Arrange
+            var episode = new Episode()
+            {
+                Show = new Show()
+                {
+                    Server = new MediaServer()
+                    {
+                        Name = "A great Media server"
+                    }
+                }
+            };
+            var baseFolder = @"F:\";
+            var folderFormat = "folder";
+            var fileNameFormat = "file-{MediaServerName}";
+
+            // Act
+            var name = episode.GenerateFileName(baseFolder, folderFormat, fileNameFormat);
+
+            // Assert
+            name.Should().Be(@"F:\folder\file-A great Media server");
+        }
+
+        [TestMethod]
         public void GenerateFileName_ShouldAddOneToMaxNumberedFilenameMatchingPattern()
         {
             // Arrange
