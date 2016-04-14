@@ -73,9 +73,9 @@ namespace SimpleTv.Downloader
                 {
                     foreach (var server in client.MediaServers)
                     {
-                        var filteredShows = server.Shows.Where(s =>
-                            Operators.LikeString(s.Name, config.ShowFilter, CompareMethod.Text)
-                        );
+                        var filteredShows = server.Shows
+                            .IncludeOnly(config.IncludeFilter)
+                            .Exclude(config.ExcludeFilter);
 
                         Console.WriteLine();
                         foreach (var show in filteredShows)

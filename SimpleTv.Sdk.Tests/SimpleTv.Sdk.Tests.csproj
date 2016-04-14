@@ -74,6 +74,7 @@
     <Compile Include="Helpers\TestingFolder.cs" />
     <Compile Include="Http\HtmlDocumentClientTests.cs" />
     <Compile Include="Http\HtmlParserExtensionsTests.cs" />
+    <Compile Include="Naming\ShowExtensionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Naming\ShowNamerTests.cs" />
     <Compile Include="Naming\PathCleanerTests.cs" />

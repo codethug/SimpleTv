@@ -65,15 +65,20 @@ namespace SimpleTv.Downloader
 
             // Later on, -d / -dryrun will be used to do a dry run (parsing without downloading)
 
+            p.Setup(arg => arg.IncludeFilter)
+                .As('i', "includeFilter")
+                .WithDescription("[optional] Type in show(s) to include.  Wildcards accepted.")
+                .SetDefault("*");
+
+            p.Setup(arg => arg.ExcludeFilter)
+                .As('x', "excludeFilter")
+                .WithDescription("[optional] Type in show(s) to exclude.  Wildcards accepted.")
+                .SetDefault(string.Empty);
+
             p.Setup(arg => arg.DownloadFolder)
                 .As('f', "downloadFolder")
                 .WithDescription("[optional] Folder to place downloaded recordings in.  Defaults to current working directory.")
                 .SetDefault(Directory.GetCurrentDirectory());
-
-            p.Setup(arg => arg.ShowFilter)
-                .As('s', "showFilter")
-                .WithDescription("[optional] Type in which show you want to download.  Wildcards accepted.")
-                .SetDefault("*");
 
             p.Setup(arg => arg.FolderFormat)
                 .As('r', "folderformat")
@@ -97,7 +102,7 @@ namespace SimpleTv.Downloader
                     "\n" +
                     "SimpleTV Downloader can download your Simple.Tv recordings.  \r\n" +
                     "Usage:\r\n" +
-                    "\t{1} -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows -s \"NCIS*\"",
+                    "\t{1} -u username@somewhere.com -p \"P@ssw0Rd\" -d c:\\tvshows -i \"NCIS*\"",
                     Assembly.GetExecutingAssembly().GetName().Version, execName
                 ))
                 .Callback(text => Console.WriteLine(text));
