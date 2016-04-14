@@ -97,17 +97,22 @@ namespace SimpleTv.Sdk.Naming
         {
             var tokens = new Dictionary<string, string>();
 
-            tokens.Add("ShowName",          HttpUtility.HtmlDecode(episode.Show.IfNotNull(s => s.Name)));
+            tokens.Add("ShowName",          episode.Show.IfNotNull(s => s.Name));
             tokens.Add("SeasonNumber",      episode.SeasonNumber.ToString());       // 3 => "3"
             tokens.Add("EpisodeNumber",     episode.EpisodeNumber.ToString());      // 5 => "5"
             tokens.Add("SeasonNumber00",    episode.SeasonNumber.ToString("D2"));   // 3 => "03"
             tokens.Add("EpisodeNumber00",   episode.EpisodeNumber.ToString("D2"));  // 3 => "03"
-            tokens.Add("EpisodeName",       HttpUtility.HtmlDecode(episode.EpisodeName));
+            tokens.Add("EpisodeName",       episode.EpisodeName);
             tokens.Add("DateTime",          episode.DateTime.IfNotNull(dt => dt.Value.ToString("yyyy-MM-ddTHHmm"))); // 2000-08-15T1653
             tokens.Add("ChannelNumber",     episode.ChannelNumber);                 // "15.7"
             // {nnnn} is also available, but is handled separately in ShowNamer.GenerateFileName
 
             return tokens;
+        }
+
+        public static string HtmlDecode(this string input)
+        {
+            return HttpUtility.HtmlDecode(input);
         }
     }
 }

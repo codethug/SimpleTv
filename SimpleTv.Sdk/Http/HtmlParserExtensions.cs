@@ -73,7 +73,7 @@ namespace SimpleTv.Sdk.Http
                     Server = server,
 
                     Id = new Guid(f.Attributes["data-groupid"].Value),
-                    Name = f.SelectTag("b").First().InnerText,
+                    Name = f.SelectTag("b").First().InnerText.HtmlDecode(),
                     NumEpisodes = Int32.Parse(f.SelectClass("no").First().InnerText)
                 }).ToList();
         }
@@ -143,9 +143,11 @@ namespace SimpleTv.Sdk.Http
                     InstanceId = article.SelectTag("a").FirstOrDefault()
                         .IfNotNull(e => new Guid(e.Attributes["data-instanceid"].Value)),
                     EpisodeName = article.SelectTag("h3").FirstOrDefault()
-                        .IfNotNull(e => e.ChildNodes[0].InnerText.Trim()),
+                        .IfNotNull(e => e.ChildNodes[0].InnerText.Trim())
+                        .HtmlDecode(),
                     Description = article.SelectTag("p").FirstOrDefault()
-                        .IfNotNull(e => e.InnerText.Trim()),
+                        .IfNotNull(e => e.InnerText.Trim())
+                        .HtmlDecode(),
                     SeasonNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault()
                         .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
                     EpisodeNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault()

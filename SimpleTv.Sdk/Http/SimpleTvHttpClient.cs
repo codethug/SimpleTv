@@ -107,7 +107,7 @@ namespace SimpleTv.Sdk.Http
 
         private MediaServer LocateMediaServer(MediaServer server)
         {
-            var description = "Locating Media Server \"" + server.Name + "\"";
+            var description = string.Format("Locating Media Server \"{0}\"", server.Name);
             var urlTemplate = "https://us-my.simple.tv/Data/RealTimeData?accountId={0}&mediaServerId={1}&playerAlternativeAvailable=false";
 
             var url = new Uri(string.Format(urlTemplate, server.AccountId, server.Id));
@@ -155,7 +155,7 @@ namespace SimpleTv.Sdk.Http
 
         private bool TestMediaServerLocations(MediaServer ms)
         {
-            var description = "Testing Media Server \"" + ms.Name + "\"";
+            var description = string.Format("Testing Media Server \"{0}\"", ms.Name);
             Console.WriteLine(description);
             if (PingUrl(ms.LocalPingUrl))
             {
@@ -199,7 +199,7 @@ namespace SimpleTv.Sdk.Http
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, server.Id, BrowserUTCOffsetMinutes);
 
             return docClient
-                .GetDocument(new Uri(url), "Loading shows on " + server.Name)
+                .GetDocument(new Uri(url), string.Format("Loading shows on \"{0}\"", server.Name))
                 .ParseShows(server, this);
         }
 
@@ -210,7 +210,7 @@ namespace SimpleTv.Sdk.Http
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, BrowserUTCOffsetMinutes, show.Id);
 
             return docClient
-                .GetDocument(new Uri(url), "Loading episodes of " + show.Name)
+                .GetDocument(new Uri(url), string.Format("Loading episodes of \"{0}\"", show.Name))
                 .ParseEpisodes(show);
         }
 
@@ -220,13 +220,13 @@ namespace SimpleTv.Sdk.Http
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
             var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.Show.Id, episode.Id, episode.InstanceId);
 
-            return docClient.GetDocument(new Uri(url), "Finding Episode " + episode.EpisodeName)
+            return docClient.GetDocument(new Uri(url), string.Format("Finding Episode \"{0}\"", episode.EpisodeName))
                 .ParseEpisodeLocation();
         }
 
         internal void Download(string fullPathToVideo, string fileName)
         {
-            var description = "Downloading " + fullPathToVideo + " to " + fileName;
+            var description = string.Format("Downloading {0} to {1}", fullPathToVideo, fileName);
             Console.WriteLine(description);
 
             var directory = Path.GetDirectoryName(fileName);
