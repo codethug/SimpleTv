@@ -6,16 +6,21 @@ using SimpleTv.Sdk.Models;
 using SimpleTv.Sdk.Http;
 using SimpleTv.Sdk.Diagnostics;
 using System;
+using SimpleTv.Sdk.Naming;
 
 namespace SimpleTv.Sdk
 {
     public class SimpleTvClient
     {
         private SimpleTvHttpClient _client;
+        private Configuration config;
 
-        public SimpleTvClient()
+        public SimpleTvClient(Configuration config)
         {
-            _client = new SimpleTvHttpClient(SystemClock.Instance, DateTimeZoneProviders.Bcl);
+            this.config = config;
+            var webClient = new CookieAwareWebClient();
+            var docClient = new HtmlDocumentClient(webClient);
+            _client = new SimpleTvHttpClient(SystemClock.Instance, DateTimeZoneProviders.Bcl, webClient, docClient);
         }
 
         public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived
@@ -41,5 +46,14 @@ namespace SimpleTv.Sdk
                 return _mediaServers;
             }
         }
+
+        public void DownloadEpisode(Episode episode)
+        {
+            var fileName = episode.GenerateFileName(config.Folder, config.FolderFormat, config.FilenameFormat);
+            var fullPathToVideo = episode.show.server.StreamBaseUrl + _client.GetEpisodeLocation(episode); ;
+
+            _client.Download(fullPathToVideo, fileName);
+        }
+
     }
 }

@@ -11,7 +11,7 @@ using System.Web;
 
 namespace SimpleTv.Sdk.Http
 {
-    public class HtmlDocumentClient
+    public class HtmlDocumentClient : IHtmlDocumentClient
     {
         private IWebClient client;
         public HtmlDocumentClient(IWebClient client)

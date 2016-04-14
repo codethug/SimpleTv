@@ -34,6 +34,7 @@
       <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -53,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Diagnostics\DenyStreamingException.cs" />
     <Compile Include="Diagnostics\ExceptionExtensions.cs" />
     <Compile Include="Diagnostics\HttpData.cs" />
     <Compile Include="Diagnostics\HttpResponseReceivedEventArgs.cs" />
@@ -62,6 +65,7 @@
     <Compile Include="Http\HtmlDocumentClient.cs" />
     <Compile Include="Http\HtmlParserExtensions.cs" />
     <Compile Include="Http\HttpDocumentExtensions.cs" />
+    <Compile Include="Http\IHtmlDocumentClient.cs" />
     <Compile Include="Http\IWebClient.cs" />
     <Compile Include="Http\SimpleTvHttpClient.cs" />
     <Compile Include="Models\Episode.cs" />

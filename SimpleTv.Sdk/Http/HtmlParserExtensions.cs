@@ -1,5 +1,7 @@
 ﻿using HtmlAgilityPack;
+using SimpleTv.Sdk.Diagnostics;
 using SimpleTv.Sdk.Models;
+using SimpleTv.Sdk.Naming;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -154,6 +156,46 @@ namespace SimpleTv.Sdk.Http
                             .ParseAsDateTimeWithoutYear()
                         )
                 }).ToList();
+        }
+
+        private static bool ShouldDenyStreaming(this HtmlNode vidPlayer)
+        {
+            // 	<div id="video-player-large" 
+            //       data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" 
+            //       data-denystreaming="false" 
+            //       data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
+
+            bool shouldDeny = false;
+
+            var denyStreamingAttribute = vidPlayer.Attributes["data-denystreaming"];
+            if (denyStreamingAttribute != null && !string.IsNullOrWhiteSpace(denyStreamingAttribute.Value))
+            {
+                bool.TryParse(denyStreamingAttribute.Value, out shouldDeny);
+            }
+
+            return shouldDeny;
+        }
+
+        public static string ParseEpisodeLocation(this HtmlDocument html)
+        {
+            // 	<div id="video-player-large" 
+            //       data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" 
+            //       data-denystreaming="false" 
+            //       data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
+            var vidPlayer = html.GetElementbyId("video-player-large");
+
+            if (vidPlayer.ShouldDenyStreaming())
+            {
+                var message = "Please upgrade to the Simple.TV Premier Service to download this show remotely.";
+                throw new DenyStreamingException(message);
+            }
+
+            return vidPlayer
+                .Attributes["data-streamlocation"].Value
+
+                // regex = /tv.main.hls-(\1\d).m3u8/;
+                // url = (baseStreamUrl + streamLocation).replace(regex, "tv.4500000.10\$1")
+                .RegexReplace(@"tv\.main\.hls-(\d)\.m3u8", @"tv.4500000.10$1");
         }
 
         public static T IfNotNull<S,T>(this S source, Func<S,T> evaluateIfSourceNotNull)

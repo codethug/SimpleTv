@@ -3,6 +3,7 @@ using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using SimpleTv.Sdk;
 using SimpleTv.Sdk.Diagnostics;
+using SimpleTv.Sdk.Naming;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,15 +15,15 @@ namespace SimpleTv.Downloader
 {
     public class Downloader
     {
-        private ApplicationArguments arguments;
+        private Configuration config;
         private List<HttpData> httpLogs;
         SimpleTvClient client;
 
-        public Downloader(ApplicationArguments arguments)
+        public Downloader(Configuration config)
         {
-            this.arguments = arguments;
+            this.config = config;
             httpLogs = new List<HttpData>();
-            client = new SimpleTvClient();
+            client = new SimpleTvClient(config);
             client.HttpResponseReceived += Client_HttpResponseReceived;
         }
 
@@ -68,12 +69,12 @@ namespace SimpleTv.Downloader
             Console.WriteLine();
             try
             {
-                if (client.Login(arguments.Username, arguments.Password))
+                if (client.Login(config.Username, config.Password))
                 {
                     foreach (var server in client.MediaServers)
                     {
                         var filteredShows = server.Shows.Where(s =>
-                            Operators.LikeString(s.Name, arguments.ShowFilter, CompareMethod.Text)
+                            Operators.LikeString(s.Name, config.ShowFilter, CompareMethod.Text)
                         );
 
                         Console.WriteLine();
@@ -84,7 +85,7 @@ namespace SimpleTv.Downloader
 
                             foreach (var episode in show.Episodes)
                             {
-                                episode.Download(arguments.Folder, arguments.FolderFormat, arguments.FilenameFormat);
+                                client.DownloadEpisode(episode);
                             }
 
                             Console.WriteLine("=======================================================");
@@ -107,6 +108,11 @@ namespace SimpleTv.Downloader
                     Console.WriteLine("Are you sure you're connected to the internet?  I'm having trouble with DNS resolution.");
                     Console.ResetColor();
                 }
+            }
+            catch (DenyStreamingException e)
+            {
+                Console.WriteLine();
+                StvConsole.WriteError(e.Message);
             }
         }
     }

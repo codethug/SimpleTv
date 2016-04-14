@@ -21,19 +21,19 @@ namespace SimpleTv.Sdk.Http
     {
         private const string simpleTvBaseUrl = "https://us.simple.tv";
         private readonly IWebClient webClient;
-        private readonly HtmlDocumentClient docClient;
+        private readonly IHtmlDocumentClient docClient;
         private IClock clock;
         Object sync;
         private IDateTimeZoneProvider dtzProvider;
 
-        internal SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider)
+        internal SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider, IWebClient webClient, IHtmlDocumentClient docClient)
         {
             sync = new Object();
 
-            this.webClient = new CookieAwareWebClient();
+            this.webClient = webClient;
             webClient.DownloadProgressChanged += Client_DownloadProgressChanged;
             webClient.DownloadFileCompleted += Client_DownloadFileCompleted;
-            docClient = new HtmlDocumentClient(webClient);
+            this.docClient = docClient;
 
             this.clock = clock;
             this.dtzProvider = dtzProvider;
@@ -214,32 +214,20 @@ namespace SimpleTv.Sdk.Http
                 .ParseEpisodes(show, this);
         }
 
-        internal string GetEpisodeLocation(Episode episode)
+        public string GetEpisodeLocation(Episode episode)
         {
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
             var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.show.Id, episode.Id, episode.InstanceId);
 
             return docClient.GetDocument(new Uri(url), "Finding Episode " + episode.EpisodeName)
-
-                // 	<div id="video-player-large" data-streamlocation="/7fa7fa16-9e45-47a5-a7cf-ae2c863e0e11/content/20151001T165901.91516f04-5ec8-11e5-b06f-22000b688027/tv.main.hls-0.m3u8" data-denystreaming="false" data-denystreamingmessage="Please upgrade to the Simple.TV Premier Service to watch this show remotely.">
-                .GetElementbyId("video-player-large")
-                .Attributes["data-streamlocation"].Value
-
-                // regex = /tv.main.hls-(\1\d).m3u8/;
-                // url = (baseStreamUrl + streamLocation).replace(regex, "tv.4500000.10\$1")
-                .RegexReplace(@"tv\.main\.hls-(\d)\.m3u8", @"tv.4500000.10$1")
-                
-                // Remove leading '/'
-                .TrimStart(new char[] { '/' });
+                .ParseEpisodeLocation();
         }
 
-        internal void Download(Episode episode, string fileName)
+        internal void Download(string fullPathToVideo, string fileName)
         {
-            var fullPathToVideo = episode.show.server.StreamBaseUrl + "/" + GetEpisodeLocation(episode);
             var description = "Downloading " + fullPathToVideo + " to " + fileName;
             Console.WriteLine(description);
-
 
             var directory = Path.GetDirectoryName(fileName);
             Directory.CreateDirectory(directory);

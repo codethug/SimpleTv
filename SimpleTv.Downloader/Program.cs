@@ -4,6 +4,7 @@ using Fclp;
 using System.IO;
 using SimpleTv.Sdk.Diagnostics;
 using System.Reflection;
+using SimpleTv.Sdk;
 
 namespace SimpleTv.Downloader
 {
@@ -60,9 +61,9 @@ namespace SimpleTv.Downloader
             }
         }
 
-        public static FluentCommandLineParser<ApplicationArguments> SetupArguments()
+        public static FluentCommandLineParser<Configuration> SetupArguments()
         {
-            var p = new FluentCommandLineParser<ApplicationArguments>();
+            var p = new FluentCommandLineParser<Configuration>();
 
             p.Setup(arg => arg.Username)
                 .As('u', "username")

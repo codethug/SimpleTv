@@ -4,6 +4,7 @@ using SimpleTvSdk.Tests.Helpers;
 using SimpleTv.Sdk.Http;
 using HtmlAgilityPack;
 using FluentAssertions;
+using SimpleTv.Sdk.Diagnostics;
 
 namespace SimpleTv.Sdk.Tests
 {
@@ -239,6 +240,36 @@ namespace SimpleTv.Sdk.Tests
 
             // Assert
             episodes[0].DateTime.Should().Be(null);
+        }
+
+        [TestMethod]
+        public void ParseEpisodeLocation_ShouldThrowExceptionWhenDenyStreamingTrue()
+        {
+            // Arrange
+            var page = SampleData.Get("Http.TestData.EpisodePlayer1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(page);
+
+            // Act
+            Action act = () => html.ParseEpisodeLocation();
+
+            // Assert
+            act.ShouldThrow<DenyStreamingException>().WithMessage("Please upgrade to the Simple.TV Premier Service to download this show remotely.");
+        }
+
+        [TestMethod]
+        public void ParseEpisodeLocation_ShouldParseEpisodeLocation()
+        {
+            // Arrange
+            var page = SampleData.Get("Http.TestData.EpisodePlayer2.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(page);
+
+            // Act
+            var episodeLocation = html.ParseEpisodeLocation();
+
+            // Assert
+            episodeLocation.Should().Be("/7fa7fa16-9e45/tv.4500000.100");
         }
     }
 }

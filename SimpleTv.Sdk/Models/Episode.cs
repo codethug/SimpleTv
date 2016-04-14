@@ -15,12 +15,6 @@ namespace SimpleTv.Sdk.Models
             this.show = show;
         }
 
-        public void Download(string baseFolder, string folderFormat, string fileNameTemplate)
-        {
-            var fileName = this.GenerateFileName(baseFolder, folderFormat, fileNameTemplate);
-            _client.Download(this, fileName);
-        }
-
         public Guid Id { get; set; }
         public Guid InstanceId { get; set; }
         public string EpisodeName { get; set; }
