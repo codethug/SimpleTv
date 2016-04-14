@@ -39,7 +39,6 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
                 var episode = new Episode();
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
-                var token = "{nnnn}";
                 Directory.CreateDirectory(Path.Combine(baseFolder.Location, folderFormat));
                 File.Create(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0115.mp4")).Dispose();
                 File.Create(Path.Combine(baseFolder.Location, folderFormat, "TestFileName-0132.mp4")).Dispose();
@@ -62,7 +61,6 @@ namespace SimpleTvSdk.Tests.ShowNamerExtensions
                 var episode = new Episode();
                 var folderFormat = "TestFolderName";
                 var fileNameFormat = "TestFileName-{nnnn}.mp4";
-                var token = "{nnnn}";
 
                 // Act
                 var fileName = ShowNamer.GenerateFileName(episode, baseFolder.Location, folderFormat, fileNameFormat);

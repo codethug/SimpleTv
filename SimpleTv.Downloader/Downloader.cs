@@ -53,9 +53,9 @@ namespace SimpleTv.Downloader
             {
                 File.WriteAllText(fullFileName, data);
             }
-            catch (UnauthorizedAccessException e)
+            catch (UnauthorizedAccessException)
             {
-                // IF the current directory fails, then try the TEMP directory
+                // Since the current directory failed, use the TEMP directory
                 fullFileName = Path.Combine(Path.GetTempPath(), fileName);
                 File.WriteAllText(fullFileName, data);
             }
