@@ -22,41 +22,29 @@ namespace SimpleTv.Downloader
             }
             else
             {
-                if (p.Object.DownloadFolder != null)
+                string error = null;
+                var downloader = new Downloader(p.Object);
+                try
                 {
-                    Console.WriteLine();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("The -d / -downloadfolder parameter has been renamed.  Please use -f / -folder instead.");
-                    Console.ResetColor();
+                    downloader.Download();
                 }
-                else
+                catch (Exception e)
                 {
-
-                    string error = null;
-                    var downloader = new Downloader(p.Object);
-                    try
+                    error = e.AsDetailedString();
+                    Console.WriteLine(error);
+                    if (!p.Object.LogHttpCalls)
                     {
-                        downloader.Download();
+                        Console.WriteLine();
+                        Console.WriteLine("To log details about the HTTP calls, run this again with the '-l' flag");
+                        Console.WriteLine();
                     }
-                    catch (Exception e)
+                }
+                finally
+                {
+                    if (p.Object.LogHttpCalls)
                     {
-                        error = e.AsDetailedString();
-                        Console.WriteLine(error);
-                        if (!p.Object.LogHttpCalls)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine("To log details about the HTTP calls, run this again with the '-l' flag");
-                            Console.WriteLine();
-                        }
+                        downloader.SaveHttpLogs(error);
                     }
-                    finally
-                    {
-                        if (p.Object.LogHttpCalls)
-                        {
-                            downloader.SaveHttpLogs(error);
-                        }
-                    }
-
                 }
             }
         }
@@ -76,12 +64,9 @@ namespace SimpleTv.Downloader
                 .Required();
 
             // Later on, -d / -dryrun will be used to do a dry run (parsing without downloading)
-            p.Setup(arg => arg.DownloadFolder)
-                .As('d', "downloadfolder")
-                .WithDescription("[unsupported] Please use the f / folder parameter instead of d / downloadfolder.");
 
-            p.Setup(arg => arg.Folder)
-                .As('f', "folder")
+            p.Setup(arg => arg.DownloadFolder)
+                .As('f', "downloadFolder")
                 .WithDescription("[optional] Folder to place downloaded recordings in.  Defaults to current working directory.")
                 .SetDefault(Directory.GetCurrentDirectory());
 
