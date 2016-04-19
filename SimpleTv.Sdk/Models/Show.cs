@@ -5,7 +5,7 @@ using SimpleTv.Sdk.Http;
 
 namespace SimpleTv.Sdk.Models
 {
-    public class Show
+    public class Show : INamed
     {
         public Guid Id { get; set; } // Group Id
         public string Name { get; set; }

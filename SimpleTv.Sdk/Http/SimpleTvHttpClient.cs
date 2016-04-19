@@ -17,7 +17,7 @@ using System.Collections.Specialized;
 
 namespace SimpleTv.Sdk.Http
 {
-    public class SimpleTvHttpClient
+    public class SimpleTvHttpClient : ISimpleTvHttpClient
     {
         private const string simpleTvBaseUrl = "https://us.simple.tv";
         private readonly IWebClient webClient;
@@ -33,8 +33,8 @@ namespace SimpleTv.Sdk.Http
             this.webClient = webClient;
             webClient.DownloadProgressChanged += Client_DownloadProgressChanged;
             webClient.DownloadFileCompleted += Client_DownloadFileCompleted;
-            this.docClient = docClient;
 
+            this.docClient = docClient;
             this.clock = clock;
             this.dtzProvider = dtzProvider;
         }
@@ -70,7 +70,7 @@ namespace SimpleTv.Sdk.Http
         // POST to https://us.simple.tv/Auth/SignIn
         //   ?InvitationKey=&UserName=user%40gmail.com&Password=[EncodedPW]&RememberMe=false&browserDateTime=2016/3/11 19:28:16
         // Keep cookies for future requests
-        internal bool Login(string un, string pw)
+        public bool Login(string un, string pw)
         {
             var uri = new Uri(simpleTvBaseUrl + "/Auth/SignIn");
             var rawResponse = docClient.PostRawReponse(uri, "Logging In", new NameValueCollection {
@@ -91,21 +91,13 @@ namespace SimpleTv.Sdk.Http
             return true;
         }
 
-        internal List<MediaServer> GetMediaServers()
+        public List<MediaServer> GetMediaServers()
         {
             return docClient.GetDocument(new Uri("http://us-my.simple.tv"), "Loading Media Servers")
-                .ParseMediaServers(this)
-                .Where(ms =>
-                {
-                    // Find out where the DVR is on the internet/network
-                    LocateMediaServer(ms);
-                    // Ensure we can actually communicate with the DVR
-                    return TestMediaServerLocations(ms);
-                })
-                .ToList();
+                .ParseMediaServers(this);
         }
 
-        private MediaServer LocateMediaServer(MediaServer server)
+        public MediaServer LocateMediaServer(MediaServer server)
         {
             var description = string.Format("Locating Media Server \"{0}\"", server.Name);
             var urlTemplate = "https://us-my.simple.tv/Data/RealTimeData?accountId={0}&mediaServerId={1}&playerAlternativeAvailable=false";
@@ -153,7 +145,7 @@ namespace SimpleTv.Sdk.Http
             return server;
         }
 
-        private bool TestMediaServerLocations(MediaServer ms)
+        public bool TestMediaServerLocations(MediaServer ms)
         {
             var description = string.Format("Testing Media Server \"{0}\"", ms.Name);
             Console.WriteLine(description);
@@ -193,7 +185,7 @@ namespace SimpleTv.Sdk.Http
             return true;
         }
 
-        internal List<Show> GetShows(MediaServer server)
+        public List<Show> GetShows(MediaServer server)
         {
             var urlTemplate = "https://us-my.simple.tv/Library/MyShows?browserDateTimeUTC={0}&mediaServerID={1}&browserUTCOffsetMinutes={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, server.Id, BrowserUTCOffsetMinutes);
@@ -203,7 +195,7 @@ namespace SimpleTv.Sdk.Http
                 .ParseShows(server, this);
         }
 
-        internal List<Episode> GetEpisodes(Show show)
+        public List<Episode> GetEpisodes(Show show)
         {
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/ShowDetail?browserDateTimeUTC={0}&browserUTCOffsetMinutes={1}&groupID={2}";
@@ -238,7 +230,7 @@ namespace SimpleTv.Sdk.Http
             return true;
         }
 
-        internal void Download(Uri fullPathToVideo, string fileName, string episodeName)
+        public void Download(Uri fullPathToVideo, string fileName, string episodeName)
         {
             var syncObj = new Object();
             lock (syncObj)

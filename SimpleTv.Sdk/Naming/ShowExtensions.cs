@@ -11,19 +11,18 @@ namespace SimpleTv.Sdk.Naming
 {
     public static class ShowExtensions
     {
-        public static IEnumerable<Show> IncludeOnly(this IEnumerable<Show> shows, string includeFilter)
+        public static IEnumerable<T> IncludeOnly<T>(this IEnumerable<T> shows, string includeFilter) where T : INamed
         {
             return shows.Where(s =>
                 Operators.LikeString(s.Name, includeFilter, CompareMethod.Text)
             );
         }
 
-        public static IEnumerable<Show> Exclude(this IEnumerable<Show> shows, string excludeFilter)
+        public static IEnumerable<T> Exclude<T>(this IEnumerable<T> shows, string excludeFilter) where T : INamed
         {
             return shows.Where(s =>
                 !Operators.LikeString(s.Name, excludeFilter, CompareMethod.Text)
             );
         }
-
     }
 }

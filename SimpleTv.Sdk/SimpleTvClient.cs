@@ -7,64 +7,58 @@ using SimpleTv.Sdk.Http;
 using SimpleTv.Sdk.Diagnostics;
 using System;
 using SimpleTv.Sdk.Naming;
+using System.Linq;
 
 namespace SimpleTv.Sdk
 {
     public class SimpleTvClient
     {
-        private SimpleTvHttpClient _client;
-        private Configuration config;
+        private ISimpleTvHttpClient tvHttpClient;
 
-        public SimpleTvClient(Configuration config)
+        public SimpleTvClient(ISimpleTvHttpClient tvHttpClient)
         {
-            this.config = config;
-            var webClient = new CookieAwareWebClient();
-            var docClient = new HtmlDocumentClient(webClient);
-            _client = new SimpleTvHttpClient(SystemClock.Instance, DateTimeZoneProviders.Bcl, webClient, docClient);
-        }
-
-        public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived
-        {
-            add { _client.HttpResponseReceived += value; }
-            remove { _client.HttpResponseReceived -= value; }
+            this.tvHttpClient = tvHttpClient;
         }
 
         public bool Login(string username, string password)
         {
-            return _client.Login(username, password);
+            return tvHttpClient.Login(username, password);
         }
 
-        private List<MediaServer> _mediaServers;
-        public List<MediaServer> MediaServers
+        public IEnumerable<MediaServer> GetMediaServers(string include = "*", string exclude = "")
         {
-            get
-            {
-                if (_mediaServers == null)
+            return tvHttpClient.GetMediaServers()
+                .IncludeOnly(include)
+                .Exclude(exclude)
+                .Where(ms =>
                 {
-                    _mediaServers = _client.GetMediaServers();
-                }
-                return _mediaServers;
-            }
+                    // Find out where the DVR is on the internet/network
+                    tvHttpClient.LocateMediaServer(ms);
+                    // Ensure we can actually communicate with the DVR
+                    return tvHttpClient.TestMediaServerLocations(ms);
+                });
         }
 
-        public List<Show> GetShows(MediaServer server)
+        public IEnumerable<Show> GetShows(MediaServer server, string include, string exclude)
         {
-            return _client.GetShows(server);
+            return tvHttpClient.GetShows(server)
+                .IncludeOnly(include)
+                .Exclude(exclude);
         }
 
         public List<Episode> GetEpisodes(Show show)
         {
-            return _client.GetEpisodes(show);
+            return tvHttpClient.GetEpisodes(show);
         }
 
-        public void DownloadEpisode(Episode episode)
+        public void DownloadEpisode(Episode episode, string downloadFolder, string folderFormat, string filenameFormat)
         {
-            var fileName = episode.GenerateFileName(config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
-            var fullPathToVideo = new Uri(episode.Show.Server.StreamBaseUrl + _client.GetEpisodeLocation(episode));
+            var fileName = episode.GenerateFileName(downloadFolder, folderFormat, filenameFormat);
+            var fullPathToVideo = new Uri(episode.Show.Server.StreamBaseUrl + tvHttpClient.GetEpisodeLocation(episode));
 
-            if (_client.IsBigEnoughToDownload(fullPathToVideo, 1024*1024, episode.EpisodeName))
+            if (tvHttpClient.IsBigEnoughToDownload(fullPathToVideo, 1024*1024, episode.EpisodeName))
             {
-                _client.Download(fullPathToVideo, fileName, episode.EpisodeName);
+                tvHttpClient.Download(fullPathToVideo, fileName, episode.EpisodeName);
             }
         }
     }

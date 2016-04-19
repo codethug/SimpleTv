@@ -65,14 +65,24 @@ namespace SimpleTv.Downloader
 
             // Later on, -d / -dryrun will be used to do a dry run (parsing without downloading)
 
-            p.Setup(arg => arg.IncludeFilter)
-                .As('i', "includeFilter")
+            p.Setup(arg => arg.ShowIncludeFilter)
+                .As('i', "includeShows")
                 .WithDescription("[optional] Type in show(s) to include.  Wildcards accepted.")
                 .SetDefault("*");
 
-            p.Setup(arg => arg.ExcludeFilter)
-                .As('x', "excludeFilter")
+            p.Setup(arg => arg.ShowExcludeFilter)
+                .As('x', "excludeShows")
                 .WithDescription("[optional] Type in show(s) to exclude.  Wildcards accepted.")
+                .SetDefault(string.Empty);
+
+            p.Setup(arg => arg.ServerIncludeFilter)
+                .As('s', "includeServers")
+                .WithDescription("[optional] Type in media server(s) to include.  Wildcards accepted.")
+                .SetDefault("*");
+
+            p.Setup(arg => arg.ServerExcludeFilter)
+                .As('t', "excludeServers")
+                .WithDescription("[optional] Type in media server(s) to exclude.  Wildcards accepted.")
                 .SetDefault(string.Empty);
 
             p.Setup(arg => arg.DownloadFolder)

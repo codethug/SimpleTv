@@ -5,7 +5,7 @@ using System.Net;
 namespace SimpleTv.Sdk.Http
 {
     // CookieAwareWebClient from http://stackoverflow.com/questions/31129578/using-cookie-aware-webclient
-    internal class CookieAwareWebClient : WebClient, IWebClient
+    public class CookieAwareWebClient : WebClient, IWebClient
     {
         public CookieAwareWebClient() : base()
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SimpleTv.Sdk
+﻿namespace SimpleTv.Downloader
 {
     public class Configuration
     {
@@ -14,8 +8,10 @@ namespace SimpleTv.Sdk
         public string DownloadFolder { get; set; }
         public string FolderFormat { get; set; }
         public string FilenameFormat { get; set; }
-        public string IncludeFilter { get; set; }
-        public string ExcludeFilter { get; set; }
+        public string ShowIncludeFilter { get; set; }
+        public string ShowExcludeFilter { get; set; }
+        public string ServerIncludeFilter { get; set; }
+        public string ServerExcludeFilter { get; set; }
         public bool LogHttpCalls { get; set; }
     }
 }

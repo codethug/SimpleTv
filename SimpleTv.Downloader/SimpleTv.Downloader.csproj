@@ -74,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="StvConsole.cs" />
     <Compile Include="Downloader.cs" />
     <Compile Include="Program.cs" />

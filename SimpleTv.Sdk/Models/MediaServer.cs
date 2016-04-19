@@ -5,7 +5,7 @@ using SimpleTv.Sdk.Http;
 
 namespace SimpleTv.Sdk.Models
 {
-    public class MediaServer
+    public class MediaServer : INamed
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

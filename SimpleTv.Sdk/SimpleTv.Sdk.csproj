@@ -54,7 +54,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration.cs" />
     <Compile Include="Diagnostics\DenyStreamingException.cs" />
     <Compile Include="Diagnostics\ExceptionExtensions.cs" />
     <Compile Include="Diagnostics\HttpData.cs" />
@@ -66,9 +65,11 @@
     <Compile Include="Http\HtmlParserExtensions.cs" />
     <Compile Include="Http\HttpDocumentExtensions.cs" />
     <Compile Include="Http\IHtmlDocumentClient.cs" />
+    <Compile Include="Http\ISimpleTvHttpClient.cs" />
     <Compile Include="Http\IWebClient.cs" />
     <Compile Include="Http\SimpleTvHttpClient.cs" />
     <Compile Include="Models\Episode.cs" />
+    <Compile Include="Models\INamed.cs" />
     <Compile Include="Models\MediaServer.cs" />
     <Compile Include="Models\Show.cs" />
     <Compile Include="Naming\PathCleaner.cs" />

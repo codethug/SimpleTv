@@ -13,6 +13,10 @@ In this screenshot, the Simple.TV DVR is on the same LAN as the computer running
 
 The downloader names the files intelligently and files them in a folder per show.  By default, the folder and file naming is [Plex friendly](https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows).
 
+## Command Line Parameters
+
+For full documentation on the command line parameters available, see the [Parameters documentation](doc/Parameters.md).
+
 ## Customizing Folder\\Filename
 
 To learn how to customize how the files are saved, see the [NamingFormat documentation](doc/NamingFormat.md).

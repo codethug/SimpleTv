@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
+using NodaTime;
 using SimpleTv.Sdk;
 using SimpleTv.Sdk.Diagnostics;
+using SimpleTv.Sdk.Http;
 using SimpleTv.Sdk.Naming;
 using System;
 using System.Collections.Generic;
@@ -17,14 +19,19 @@ namespace SimpleTv.Downloader
     {
         private Configuration config;
         private List<HttpData> httpLogs;
-        SimpleTvClient client;
+        SimpleTvClient tvClient;
 
         public Downloader(Configuration config)
         {
             this.config = config;
             httpLogs = new List<HttpData>();
-            client = new SimpleTvClient(config);
-            client.HttpResponseReceived += Client_HttpResponseReceived;
+
+            var webClient = new CookieAwareWebClient();
+            var docClient = new HtmlDocumentClient(webClient);
+            var tvHttpClient = new SimpleTvHttpClient(SystemClock.Instance, DateTimeZoneProviders.Bcl, webClient, docClient);
+            tvHttpClient.HttpResponseReceived += Client_HttpResponseReceived;
+
+            tvClient = new SimpleTvClient(tvHttpClient);
         }
 
         private void Client_HttpResponseReceived(object sender, HttpResponseReceivedEventArgs e)
@@ -69,19 +76,14 @@ namespace SimpleTv.Downloader
             Console.WriteLine();
             try
             {
-                if (client.Login(config.Username, config.Password))
+                if (tvClient.Login(config.Username, config.Password))
                 {
-                    foreach (var server in client.MediaServers)
+                    foreach (var server in tvClient.GetMediaServers(config.ServerIncludeFilter, config.ServerExcludeFilter))
                     {
-                        var filteredShows = client
-                            .GetShows(server)
-                            .IncludeOnly(config.IncludeFilter)
-                            .Exclude(config.ExcludeFilter);
-
                         Console.WriteLine();
-                        foreach (var show in filteredShows)
+                        foreach (var show in tvClient.GetShows(server, config.ShowIncludeFilter, config.ShowExcludeFilter))
                         {
-                            var episodes = client.GetEpisodes(show);
+                            var episodes = tvClient.GetEpisodes(show);
 
                             Console.WriteLine(string.Format("Downloading {0} episode{1} of \"{2}\"", 
                                 episodes.Count, episodes.Count == 1 ? string.Empty : "s", show.Name));
@@ -89,7 +91,7 @@ namespace SimpleTv.Downloader
 
                             foreach (var episode in episodes)
                             {
-                                client.DownloadEpisode(episode);
+                                tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
                             }
 
                             Console.WriteLine("=======================================================");
