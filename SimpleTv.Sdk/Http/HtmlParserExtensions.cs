@@ -137,9 +137,11 @@ namespace SimpleTv.Sdk.Http
                 .Select(article => new Episode
                 {
                     Show = show,
-
-                    Id = article.SelectTag("a").FirstOrDefault()
-                        .IfNotNull(e => new Guid(e.Attributes["data-itemid"].Value)),
+                    Id = article
+                        .SelectTag("a")
+                        .Where(e => e.Attributes["data-itemid"] != null)
+                        .Select(e => new Guid(e.Attributes["data-itemid"].Value))
+                        .FirstOrDefault(),
                     InstanceId = article.SelectTag("a").FirstOrDefault()
                         .IfNotNull(e => new Guid(e.Attributes["data-instanceid"].Value)),
                     EpisodeName = article.SelectTag("h3").FirstOrDefault()

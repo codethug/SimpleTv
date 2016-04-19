@@ -5,6 +5,7 @@ using SimpleTv.Sdk.Http;
 using HtmlAgilityPack;
 using FluentAssertions;
 using SimpleTv.Sdk.Diagnostics;
+using System.Linq;
 
 namespace SimpleTv.Sdk.Tests
 {
@@ -270,6 +271,23 @@ namespace SimpleTv.Sdk.Tests
 
             // Assert
             episodeLocation.Should().Be("/7fa7fa16-9e45/tv.4500000.100");
+        }
+
+        [TestMethod]
+        public void ParseEpisodes_ShouldParseIdsWhenNotInFirstAnchorTag()
+        {
+            // Arrange
+            var page = SampleData.Get("Http.TestData.ShowDetail1.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(page);
+
+            // Act
+            var episodes = html.ParseEpisodes(new Models.Show()).ToList();
+
+            // Assert
+            episodes.Count.Should().Be(1);
+            episodes[0].Id.Should().Be(new Guid("8531ba48-b88f-11e3-9541-22000aa62ab4"));
+            episodes[0].InstanceId.Should().Be(new Guid("54e4e8e6-e6f1-11e3-ae60-22000b278f17"));
         }
     }
 }
