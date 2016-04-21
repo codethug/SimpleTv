@@ -65,3 +65,6 @@ details, see the [NamingFormat documentation](doc/NamingFormat.md).
 
 The `-r` or `-reboot` is used to reboot the SimpleTV DVR.  This can be used
 in combination with the `-s` and `-e` parameters.
+
+If your DVR is unreachable by the [simple.tv website](http://my.simple.tv), then
+this command will not be able to reboot your DVR.
