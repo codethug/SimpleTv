@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Diagnostics\StreamNotFoundException.cs" />
     <Compile Include="Diagnostics\DenyStreamingException.cs" />
     <Compile Include="Diagnostics\ExceptionExtensions.cs" />
     <Compile Include="Diagnostics\HttpData.cs" />

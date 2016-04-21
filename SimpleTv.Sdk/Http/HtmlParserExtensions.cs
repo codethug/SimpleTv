@@ -222,12 +222,16 @@ namespace SimpleTv.Sdk.Http
                 throw new DenyStreamingException(message);
             }
 
-            return vidPlayer
-                .Attributes["data-streamlocation"].Value
+            var location = vidPlayer.Attributes["data-streamlocation"].Value;
+            if (location == "no_stream_found_for_this_instancestate")
+            {
+                var message = "There seems to be an error with this episode.  Please check your DVR to verify that you can play this through the web site at https://my.simple.tv.";
+                throw new StreamNotFoundException(message);
+            }
 
                 // regex = /tv.main.hls-(\1\d).m3u8/;
                 // url = (baseStreamUrl + streamLocation).replace(regex, "tv.4500000.10\$1")
-                .RegexReplace(@"tv\.main\.hls-(\d)\.m3u8", @"tv.4500000.10$1");
+            return location.RegexReplace(@"tv\.main\.hls-(\d)\.m3u8", @"tv.4500000.10$1");
         }
 
         public static T IfNotNull<S,T>(this S source, Func<S,T> evaluateIfSourceNotNull)
