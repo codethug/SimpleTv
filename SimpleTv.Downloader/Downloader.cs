@@ -113,7 +113,10 @@ namespace SimpleTv.Downloader
             {
                 if (tvClient.Login(config.Username, config.Password))
                 {
-                    foreach (var server in tvClient.GetMediaServers(config.ServerIncludeFilter, config.ServerExcludeFilter))
+                    var servers = tvClient.GetMediaServers(config.ServerIncludeFilter, config.ServerExcludeFilter);
+                    var foundServers = tvClient.FindMediaServer(servers);
+
+                    foreach (var server in foundServers)
                     {
                         Console.WriteLine();
                         foreach (var show in tvClient.GetShows(server, config.ShowIncludeFilter, config.ShowExcludeFilter))
