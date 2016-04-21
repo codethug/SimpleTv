@@ -130,11 +130,14 @@ namespace SimpleTv.Downloader
                                 {
                                     if (episode.Error != null)
                                     {
-                                        StvConsole.WriteError("Cannot download " + episode.EpisodeName + ".");
-                                        StvConsole.WriteError(episode.Error);
+                                        StvConsole.WriteError(string.Format(
+                                            "Cannot download \"{0}\" from {1}:\r\n\t{2}\r\n", 
+                                            episode.EpisodeName,
+                                            episode.DateTime.IfNotNull(d => d.Value.ToString("d")),
+                                            episode.Error));
                                     } else
                                     {
-                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+//                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
                                     }
                                 }
                                 catch (StreamNotFoundException e)
