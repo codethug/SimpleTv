@@ -130,40 +130,64 @@ namespace SimpleTv.Sdk.Http
             }
         }
 
-        public static List<Episode> ParseEpisodes(this HtmlDocument html, Show show)
+        public static string ParseRecordedWarningMessage(this HtmlNode element)
         {
-            return html.GetElementbyId("recorded")
-                .SelectTag("article")
-                .Select(article => new Episode
-                {
-                    Show = show,
-                    Id = article
-                        .SelectTag("a")
-                        .Where(e => e.Attributes["data-itemid"] != null)
-                        .Select(e => new Guid(e.Attributes["data-itemid"].Value))
-                        .FirstOrDefault(),
-                    InstanceId = article.SelectTag("a").FirstOrDefault()
-                        .IfNotNull(e => new Guid(e.Attributes["data-instanceid"].Value)),
-                    EpisodeName = article.SelectTag("h3").FirstOrDefault()
-                        .IfNotNull(e => e.ChildNodes[0].InnerText.Trim())
-                        .HtmlDecode(),
-                    Description = article.SelectTag("p").FirstOrDefault()
-                        .IfNotNull(e => e.InnerText.Trim())
-                        .HtmlDecode(),
-                    SeasonNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault()
-                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
-                    EpisodeNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault()
-                        .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
+            return element
+                .Attributes["class"]
+                .IfNotNull(a => 
+                    a.Value.Contains("recording-warning-message") ? element.InnerHtml.Trim() : null);
+        }
 
-                    ChannelNumber = article.SelectClass("show-details-info").SelectTag("b").FirstOrDefault()
-                        .IfNotNull(e => e.InnerText.Trim()),
-                    DateTime = article.SelectClass("show-details-info").FirstOrDefault()
-                        .IfNotNull(e => e
-                            .InnerHtml
-                            .Substring(0,"&nbsp;").Trim()
-                            .ParseAsDateTimeWithoutYear()
+        public static IEnumerable<Episode> ParseEpisodes(this HtmlDocument html, Show show)
+        {
+            var recorded = html.GetElementbyId("recorded");
+
+            for(var i = 0; i < recorded.ChildNodes.Count - 1; i++)
+            {
+                if (recorded.ChildNodes[i].Name == "article")
+                {
+                    var article = recorded.ChildNodes[i];
+                    string error = null;
+                    if (recorded.ChildNodes.Count >= i + 3)
+                    {
+                        error = recorded.ChildNodes[i + 2].ParseRecordedWarningMessage();
+                    }
+
+                    yield return new Episode
+                    {
+                        Show = show,
+                        Error = error,
+
+                        Id = article
+                            .SelectTag("a")
+                            .Where(e => e.Attributes["data-itemid"] != null)
+                            .Select(e => new Guid(e.Attributes["data-itemid"].Value))
+                            .FirstOrDefault(),
+                        InstanceId = article.SelectTag("a").FirstOrDefault()
+                            .IfNotNull(e => new Guid(e.Attributes["data-instanceid"].Value)),
+                        EpisodeName = article.SelectTag("h3").FirstOrDefault()
+                            .IfNotNull(e => e.ChildNodes[0].InnerText.Trim())
+                            .HtmlDecode(),
+                        Description = article.SelectTag("p").FirstOrDefault()
+                            .IfNotNull(e => e.InnerText.Trim())
+                            .HtmlDecode(),
+                        SeasonNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(1).FirstOrDefault()
+                            .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
+                        EpisodeNumber = article.SelectClass("show-details-info").SelectTag("b").Skip(2).FirstOrDefault()
+                            .IfNotNull(e => Int32.Parse(e.InnerText.Trim())),
+
+                        ChannelNumber = article.SelectClass("show-details-info").SelectTag("b").FirstOrDefault()
+                            .IfNotNull(e => e.InnerText.Trim()),
+                        DateTime = article.SelectClass("show-details-info").FirstOrDefault()
+                            .IfNotNull(e => e
+                                .InnerHtml
+                                .Substring(0, "&nbsp;").Trim()
+                                .ParseAsDateTimeWithoutYear()
                         )
-                }).ToList();
+                    };
+                }
+            }
+
         }
 
         private static bool ShouldDenyStreaming(this HtmlNode vidPlayer)

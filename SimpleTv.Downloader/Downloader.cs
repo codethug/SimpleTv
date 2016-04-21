@@ -128,7 +128,14 @@ namespace SimpleTv.Downloader
                             {
                                 try
                                 {
-                                    tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+                                    if (episode.Error != null)
+                                    {
+                                        StvConsole.WriteError("Cannot download " + episode.EpisodeName + ".");
+                                        StvConsole.WriteError(episode.Error);
+                                    } else
+                                    {
+                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+                                    }
                                 }
                                 catch (StreamNotFoundException e)
                                 {

@@ -115,6 +115,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Http\TestData\ShowDetail1.html" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Http\TestData\ShowDetail2.html" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

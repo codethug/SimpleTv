@@ -36,7 +36,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].EpisodeName.Should().Be("Some Title with a ;");
@@ -51,7 +51,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(page);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes.Count.Should().Be(1);
@@ -72,7 +72,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].Description.Should().Be("In this great episode, amazing things happen");
@@ -87,7 +87,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].SeasonNumber.Should().Be(1);
@@ -102,7 +102,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].EpisodeNumber.Should().Be(3);
@@ -117,7 +117,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].Id.Should().Be(new Guid("6bbf69eb-5944-11e5-b06f-22000b688027"));
@@ -132,7 +132,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].InstanceId.Should().Be(new Guid("20f69334-5948-11e5-b06f-22000b688027"));
@@ -147,7 +147,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].DateTime.Should().Be(24.September(2015).At(20,00));
@@ -162,10 +162,27 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].ChannelNumber.Should().Be("15.1");
+        }
+
+        [TestMethod]
+        public void ParseEpisodes_ShouldParseError()
+        {
+            // Arrange
+            var mainPage1 = SampleData.Get("Http.TestData.ShowDetail2.html");
+            var html = new HtmlDocument();
+            html.LoadHtml(mainPage1);
+
+            // Act
+            var episodes = html.ParseEpisodes(null).ToList();
+
+            // Assert
+            episodes.Count.Should().Be(2);
+            episodes[0].Error.Should().Be("This program could not be recorded. Simple.TV was unable to tune to the selected channel.");
+            episodes[1].Error.Should().Be("This program could not be recorded. Simple.TV was unable to tune to the selected channel.");
         }
 
         [TestMethod]
@@ -237,7 +254,7 @@ namespace SimpleTv.Sdk.Tests
             html.LoadHtml(mainPage1);
 
             // Act
-            var episodes = html.ParseEpisodes(null);
+            var episodes = html.ParseEpisodes(null).ToList();
 
             // Assert
             episodes[0].DateTime.Should().Be(null);

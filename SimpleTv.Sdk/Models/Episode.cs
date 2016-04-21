@@ -16,6 +16,8 @@ namespace SimpleTv.Sdk.Models
 
         public string ChannelNumber { get; set; }
         public DateTime? DateTime { get; set; }
+        public string Error { get; set; }
+
 
         public Show Show { get; set; }
 

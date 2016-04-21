@@ -29,7 +29,12 @@ namespace SimpleTv.Sdk
         {
             return tvHttpClient.GetMediaServers()
                 .IncludeOnly(include)
-                .Exclude(exclude)
+                .Exclude(exclude);
+        }
+
+        public IEnumerable<MediaServer> FindMediaServer(IEnumerable<MediaServer> servers)
+        {
+            return servers
                 .Where(ms =>
                 {
                     // Find out where the DVR is on the internet/network
@@ -49,6 +54,11 @@ namespace SimpleTv.Sdk
         public List<Episode> GetEpisodes(Show show)
         {
             return tvHttpClient.GetEpisodes(show);
+        }
+
+        public void Reboot(MediaServer server)
+        {
+            tvHttpClient.Reboot(server);
         }
 
         public void DownloadEpisode(Episode episode, string downloadFolder, string folderFormat, string filenameFormat)
