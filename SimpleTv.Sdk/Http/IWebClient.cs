@@ -11,6 +11,7 @@ namespace SimpleTv.Sdk.Http
     public interface IWebClient
     {
         string DownloadString(Uri address);
+        byte[] DownloadData(Uri address);
         string UploadString(Uri address, string data);
         WebHeaderCollection Headers { get; }
         event DownloadProgressChangedEventHandler DownloadProgressChanged;

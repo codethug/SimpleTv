@@ -17,7 +17,6 @@ namespace SimpleTv.Sdk.Http
         List<Show> GetShows(MediaServer server);
         List<Episode> GetEpisodes(Show show);
         string GetEpisodeLocation(Episode episode);
-        bool IsBigEnoughToDownload(Uri uri, int sizeInBytes, string episodeName);
         void Download(Uri fullPathToVideo, string fileName, string episodeName);
     }
 }

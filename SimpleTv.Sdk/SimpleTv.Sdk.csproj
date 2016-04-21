@@ -62,6 +62,7 @@
     <Compile Include="Http\CookieAwareWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Http\CookieExtensions.cs" />
     <Compile Include="Http\HtmlDocumentClient.cs" />
     <Compile Include="Http\HtmlParserExtensions.cs" />
     <Compile Include="Http\HttpDocumentExtensions.cs" />

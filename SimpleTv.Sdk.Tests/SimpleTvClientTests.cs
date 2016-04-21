@@ -152,27 +152,7 @@ namespace SimpleTv.Sdk.Tests
         }
 
         [TestMethod]
-        public void GetMediaServers_ShouldLocateAllMediaServers()
-        {
-            // Arrange
-            var tvHttpClientMock = new Mock<ISimpleTvHttpClient>();
-            tvHttpClientMock.Setup(c => c.GetMediaServers()).Returns(new MediaServer[] {
-                new MediaServer() { Name = "Family Room" },
-                new MediaServer() { Name = "Master Bedroom" },
-                new MediaServer() { Name = "Basement" }
-            }.ToList());
-            tvHttpClientMock.Setup(c => c.TestMediaServerLocations(It.IsAny<MediaServer>())).Returns(true);
-            var tvClient = new SimpleTvClient(tvHttpClientMock.Object);
-
-            // Act
-            tvClient.GetMediaServers().ToList();
-
-            // Assert
-            tvHttpClientMock.Verify(c => c.LocateMediaServer(It.IsAny<MediaServer>()), Times.Exactly(3));
-        }
-
-        [TestMethod]
-        public void GetMediaServers_ShouldOnlyIncludeMediaServersThatCanBePinged()
+        public void FindMediaServer_ShouldReturnFalseIfCantBePinged()
         {
             // Arrange
             var tvHttpClientMock = new Mock<ISimpleTvHttpClient>();
@@ -188,7 +168,7 @@ namespace SimpleTv.Sdk.Tests
             var tvClient = new SimpleTvClient(tvHttpClientMock.Object);
 
             // Act
-            var result = tvClient.GetMediaServers().ToList();
+            var result = tvClient.FindMediaServer(mediaServers).ToList();
 
             // Assert
             result.Count().Should().Be(2);

@@ -1,8 +1,10 @@
 ﻿using HtmlAgilityPack;
 using SimpleTv.Sdk.Diagnostics;
+using SimpleTv.Sdk.Http;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -13,10 +15,10 @@ namespace SimpleTv.Sdk.Http
 {
     public class HtmlDocumentClient : IHtmlDocumentClient
     {
-        private IWebClient client;
+        private IWebClient webClient;
         public HtmlDocumentClient(IWebClient client)
         {
-            this.client = client;
+            this.webClient = client;
         }
 
         public event EventHandler<HttpResponseReceivedEventArgs> HttpResponseReceived;
@@ -36,7 +38,7 @@ namespace SimpleTv.Sdk.Http
         public string GetRaw(Uri uri, string description = "")
         {
             Console.WriteLine(description);
-            var rawResponse = client.DownloadString(uri);
+            var rawResponse = webClient.DownloadString(uri);
 
             OnHttpResponseReceived(new HttpData()
             {
@@ -74,9 +76,9 @@ namespace SimpleTv.Sdk.Http
             // Todo: don't have this as embedded dependency
             Console.WriteLine(description);
 
-            client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+            webClient.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
 
-            var rawResponse = client.UploadString(uri, FormatQueryString(data));
+            var rawResponse = webClient.UploadString(uri, FormatQueryString(data));
 
             OnHttpResponseReceived(new HttpData()
             {

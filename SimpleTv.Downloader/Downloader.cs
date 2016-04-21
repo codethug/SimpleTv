@@ -140,7 +140,7 @@ namespace SimpleTv.Downloader
                                             episode.Error));
                                     } else
                                     {
-//                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
                                     }
                                 }
                                 catch (StreamNotFoundException e)

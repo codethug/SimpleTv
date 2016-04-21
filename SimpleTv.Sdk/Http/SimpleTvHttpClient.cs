@@ -25,6 +25,7 @@ namespace SimpleTv.Sdk.Http
         private IClock clock;
         Object sync;
         private IDateTimeZoneProvider dtzProvider;
+        private string username;
 
         public SimpleTvHttpClient(IClock clock, IDateTimeZoneProvider dtzProvider, IWebClient webClient, IHtmlDocumentClient docClient)
         {
@@ -63,7 +64,7 @@ namespace SimpleTv.Sdk.Http
                 return clock
                     .Now
                     .ToDateTimeUtc()
-                    .ToString("yyyy/M/d HH:mm:ss");
+                    .ToString("yyyy/M/d H:m:s");
             }
         }
 
@@ -86,8 +87,10 @@ namespace SimpleTv.Sdk.Http
             dynamic response = Newtonsoft.Json.JsonConvert.DeserializeObject(rawResponse);
             if (response.SignInError != null)
             {
+                this.username = null;
                 return false;
             }
+            this.username = un;
             return true;
         }
 
@@ -148,13 +151,12 @@ namespace SimpleTv.Sdk.Http
         public bool TestMediaServerLocations(MediaServer ms)
         {
             var description = string.Format("Testing Media Server \"{0}\"", ms.Name);
-            Console.WriteLine(description);
-            if (PingUrl(ms.LocalPingUrl))
+            if (PingUrl(ms.LocalPingUrl, description))
             {
                 ms.UseLocalStream = true;
                 return true;
             }
-            else if (PingUrl(ms.RemotePingUrl))
+            else if (PingUrl(ms.RemotePingUrl, description))
             {
                 ms.UseLocalStream = false;
                 return true;
@@ -168,11 +170,11 @@ namespace SimpleTv.Sdk.Http
             }
         }
 
-        private bool PingUrl(string url)
+        private bool PingUrl(string url, string description)
         {
             try
             {
-                docClient.GetRaw(new Uri(url));
+                docClient.GetRaw(new Uri(url), description);
             }
             catch (WebException we)
             {
@@ -185,6 +187,21 @@ namespace SimpleTv.Sdk.Http
             return true;
         }
 
+        private MediaServer currentMediaServer;
+        private void SetMediaServer(MediaServer server)
+        {
+            if (currentMediaServer != server)
+            {
+                var uri = new Uri("https://us-my.simple.tv/Account/MediaServers");
+
+                docClient.PostRawReponse(uri, "Setting Media Server to \"" + server.Name + "\"", new NameValueCollection {
+                    { "defaultMediaServerID", server.Id.ToString() }
+                });
+
+                currentMediaServer = server;
+            };
+        }
+
         public void Reboot(MediaServer server)
         {
             var uri = new Uri("https://us-my.simple.tv/Setup/RebootMediaServer");
@@ -195,6 +212,8 @@ namespace SimpleTv.Sdk.Http
 
         public List<Show> GetShows(MediaServer server)
         {
+            SetMediaServer(server);
+
             var urlTemplate = "https://us-my.simple.tv/Library/MyShows?browserDateTimeUTC={0}&mediaServerID={1}&browserUTCOffsetMinutes={2}";
             var url = string.Format(urlTemplate, BrowserDateTimeUTC, server.Id, BrowserUTCOffsetMinutes);
 
@@ -205,37 +224,34 @@ namespace SimpleTv.Sdk.Http
 
         public List<Episode> GetEpisodes(Show show)
         {
+            SetMediaServer(show.Server);
+
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/ShowDetail?browserDateTimeUTC={0}&browserUTCOffsetMinutes={1}&groupID={2}";
-            var url = string.Format(urlTemplate, BrowserDateTimeUTC, BrowserUTCOffsetMinutes, show.Id);
+            var uri = new Uri(string.Format(urlTemplate, HttpUtility.UrlEncode(BrowserDateTimeUTC).ToUpper(), BrowserUTCOffsetMinutes, show.Id));
 
             return docClient
-                .GetDocument(new Uri(url), string.Format("Loading episodes for \"{0}\"", show.Name))
-                .ParseEpisodes(show);
+                //.GetDocumentAjax(uri, show.Server.AccountId, string.Format("Loading episodes for \"{0}\"", show.Name))
+                .GetDocument(uri, string.Format("Loading episodes for \"{0}\"", show.Name))
+                .ParseEpisodes(show)
+                .ToList();
         }
 
         public string GetEpisodeLocation(Episode episode)
         {
+            SetMediaServer(episode.Show.Server);
+
             // ShowId == GroupId
             var urlTemplate = "https://us-my.simple.tv/Library/Player?browserUTCOffsetMinutes={0}&groupID={1}&itemID={2}&instanceID={3}&isReachedLocally=true";
             var url = string.Format(urlTemplate, BrowserUTCOffsetMinutes, episode.Show.Id, episode.Id, episode.InstanceId);
 
-            return docClient.GetDocument(new Uri(url), string.Format("Finding Episode \"{0}\"", episode.EpisodeName))
-                .ParseEpisodeLocation();
-        }
+            var message = string.Format("Finding Episode \"{0}\" from {1}",
+                    episode.EpisodeName,
+                    episode.DateTime.IfNotNull(d => d.Value.ToString("d"))
+                );
 
-        public bool IsBigEnoughToDownload(Uri uri, int sizeInBytes, string episodeName)
-        {
-            var fileSize = webClient.GetFileSize(uri);
-            if (fileSize < sizeInBytes)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("{0} appears to be empty (filesize is {1} KB), so I'm skipping this episode",
-                    episodeName, fileSize / 1024);
-                Console.ResetColor();
-                return false;
-            }
-            return true;
+            return docClient.GetDocument(new Uri(url), message)
+                .ParseEpisodeLocation();
         }
 
         public void Download(Uri fullPathToVideo, string fileName, string episodeName)
