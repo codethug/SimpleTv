@@ -12,6 +12,7 @@ namespace SimpleTv.Sdk.Http
         bool Login(string un, string pw);
         List<MediaServer> GetMediaServers();
         MediaServer LocateMediaServer(MediaServer server);
+        void Reboot(MediaServer server);
         bool TestMediaServerLocations(MediaServer ms);
         List<Show> GetShows(MediaServer server);
         List<Episode> GetEpisodes(Show show);

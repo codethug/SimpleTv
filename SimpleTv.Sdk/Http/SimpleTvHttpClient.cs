@@ -185,6 +185,14 @@ namespace SimpleTv.Sdk.Http
             return true;
         }
 
+        public void Reboot(MediaServer server)
+        {
+            var uri = new Uri("https://us-my.simple.tv/Setup/RebootMediaServer");
+            docClient.PostRawReponse(uri, "Rebooting Media Server \"" + server.Name + "\"", new NameValueCollection {
+                    { "mediaServerID", server.Id.ToString() }
+            });
+        }
+
         public List<Show> GetShows(MediaServer server)
         {
             var urlTemplate = "https://us-my.simple.tv/Library/MyShows?browserDateTimeUTC={0}&mediaServerID={1}&browserUTCOffsetMinutes={2}";

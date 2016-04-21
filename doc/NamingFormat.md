@@ -29,10 +29,10 @@ In the example above, this results in
 
     \NCIS\Season 03\
 
-This can be customized by using the `-r` flag.  If you wanted for the folder to
+This can be customized by using the `-t` flag.  If you wanted for the folder to
 show `Regular Season 03` instead of `Season 03`, you could use this command line flag:
 
-     -r "{ShowName}\Regular Season {SeasonNumber00}"
+     -t "{ShowName}\Regular Season {SeasonNumber00}"
 
 
 ## Filename

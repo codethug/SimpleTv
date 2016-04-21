@@ -46,9 +46,9 @@ And you call the Downloader with `-s *oom`, then shows will be downloaded
 from two servers:
 Family Room and Master Bedroom.
 
-The `-t` or `-excludeServers` parameter will filter out all shows on servers that match
+The `-e` or `-excludeServers` parameter will filter out all shows on servers that match
 the pattern.  If you have the servers listed above, and you call the Downloader
-with `-t *oom`, then show will only be downloaded from one server: Basement.
+with `-e *oom`, then show will only be downloaded from one server: Basement.
 
 ## Logging
 
@@ -57,6 +57,11 @@ that will aid in debugging problems with the downloader.
 
 ## Folder and File Name Format
 
-The `-r` or `-folderformat` and `-n` or `-filenameformat` and 1parameter can
+The `-t` or `-folderformat` and `-n` or `-filenameformat` can
 customize the folder names and filenames of the downloaded episodes.  For more
 details, see the [NamingFormat documentation](doc/NamingFormat.md).
+
+## Reboot
+
+The `-r` or `-reboot` is used to reboot the SimpleTV DVR.  This can be used
+in combination with the `-s` and `-e` parameters.

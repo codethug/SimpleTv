@@ -71,6 +71,41 @@ namespace SimpleTv.Downloader
             Console.WriteLine();
         }
 
+        public void Reboot()
+        {
+            Console.WriteLine();
+            try
+            {
+                if (tvClient.Login(config.Username, config.Password))
+                {
+                    foreach (var server in tvClient.GetMediaServers(config.ServerIncludeFilter, config.ServerExcludeFilter))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Are you sure you want to reboot \"" + server.Name + "\" [y/N] ");
+                        if (Console.ReadLine().ToUpper() == "Y")
+                        {
+                            tvClient.Reboot(server);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Login Failed");
+                }
+
+            }
+            catch (WebException e)
+            {
+                if (e.Status == WebExceptionStatus.NameResolutionFailure)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Are you sure you're connected to the internet?  I'm having trouble with DNS resolution.");
+                    Console.ResetColor();
+                }
+                throw;
+            }
+        }
+
         public void Download()
         {
             Console.WriteLine();
@@ -114,6 +149,7 @@ namespace SimpleTv.Downloader
                     Console.WriteLine("Are you sure you're connected to the internet?  I'm having trouble with DNS resolution.");
                     Console.ResetColor();
                 }
+                throw;
             }
             catch (DenyStreamingException e)
             {

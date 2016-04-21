@@ -5,7 +5,7 @@
 If you have a [Simple.TV](https:/www.simple.tv) and want to copy your recordings from your Simple.TV, this project
 is for you.  When run, SimpleTV Downloader will download all recordings to a directory you specify.  Use it like this:
 
-`SimpleTv.Downloader.exe -u username@somewhere.com -p "P@ssw0Rd" -d c:\tvshows -s "NCIS*"`
+`SimpleTv.Downloader.exe -u username@somewhere.com -p "P@ssw0Rd" -f c:\tvshows -s "NCIS*"`
 
 ![Screenshot of a windows console running Simple.TV Downloader](Screenshots/Downloader-0.2.0.png "SimpleTV Downloader in Action")
 

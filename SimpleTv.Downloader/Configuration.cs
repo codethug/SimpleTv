@@ -12,6 +12,7 @@
         public string ShowExcludeFilter { get; set; }
         public string ServerIncludeFilter { get; set; }
         public string ServerExcludeFilter { get; set; }
+        public bool Reboot { get; set; }
         public bool LogHttpCalls { get; set; }
     }
 }

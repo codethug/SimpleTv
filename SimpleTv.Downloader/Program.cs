@@ -26,7 +26,14 @@ namespace SimpleTv.Downloader
                 var downloader = new Downloader(p.Object);
                 try
                 {
-                    downloader.Download();
+                    if (p.Object.Reboot)
+                    {
+                        downloader.Reboot();
+                    }
+                    else
+                    {
+                        downloader.Download();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -81,7 +88,7 @@ namespace SimpleTv.Downloader
                 .SetDefault("*");
 
             p.Setup(arg => arg.ServerExcludeFilter)
-                .As('t', "excludeServers")
+                .As('e', "excludeServers")
                 .WithDescription("[optional] Type in media server(s) to exclude.  Wildcards accepted.")
                 .SetDefault(string.Empty);
 
@@ -91,7 +98,7 @@ namespace SimpleTv.Downloader
                 .SetDefault(Directory.GetCurrentDirectory());
 
             p.Setup(arg => arg.FolderFormat)
-                .As('r', "folderformat")
+                .As('t', "folderformat")
                 .WithDescription("[optional] The folder format for saving the recording, relative to the downloadfolder.  Defaults to Plex format defined at https://support.plex.tv/hc/en-us/articles/200220687-Naming-Series-Season-Based-TV-Shows")
                 .SetDefault("{ShowName}\\Season {SeasonNumber00}");
 
@@ -103,6 +110,11 @@ namespace SimpleTv.Downloader
             p.Setup(arg => arg.LogHttpCalls)
                 .As('l', "logHttpCalls")
                 .WithDescription("[optional] Will save a log of all http calls, helpful for debugging errors")
+                .SetDefault(false);
+
+            p.Setup(arg => arg.Reboot)
+                .As('r', "reboot")
+                .WithDescription("Used to reboot Simple.TV DVRs.  Can be used with -s and -t.")
                 .SetDefault(false);
 
             p.SetupHelp("?", "help")
