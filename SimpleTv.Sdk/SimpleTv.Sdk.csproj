@@ -70,6 +70,7 @@
     <Compile Include="Http\ISimpleTvHttpClient.cs" />
     <Compile Include="Http\IWebClient.cs" />
     <Compile Include="Http\SimpleTvHttpClient.cs" />
+    <Compile Include="Models\DownloadDetails.cs" />
     <Compile Include="Models\Episode.cs" />
     <Compile Include="Models\INamed.cs" />
     <Compile Include="Models\MediaServer.cs" />

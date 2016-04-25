@@ -138,10 +138,20 @@ namespace SimpleTv.Downloader
                                             episode.EpisodeName,
                                             episode.DateTime.IfNotNull(d => d.Value.ToString("d")),
                                             episode.Error));
-                                    } else
-                                    {
-                                        tvClient.DownloadEpisode(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+                                        continue;
                                     }
+
+                                    var downloadDetails = tvClient.PrepareDownload(episode, config.DownloadFolder, config.FolderFormat, config.FilenameFormat);
+                                    if (downloadDetails.FileExistsWithSameSize && !config.OverwriteExistingDownloads)
+                                    {
+                                        Console.WriteLine(string.Format(
+                                            "Skipping \"{0}\" from {1}: Episode already downloaded",
+                                            episode.EpisodeName,
+                                            episode.DateTime.IfNotNull(d => d.Value.ToString("d"))));
+                                        continue;
+                                    }
+
+                                    tvClient.DownloadEpisode(downloadDetails);
                                 }
                                 catch (StreamNotFoundException e)
                                 {

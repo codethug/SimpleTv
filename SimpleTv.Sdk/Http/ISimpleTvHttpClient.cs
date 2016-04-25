@@ -18,5 +18,6 @@ namespace SimpleTv.Sdk.Http
         List<Episode> GetEpisodes(Show show);
         string GetEpisodeLocation(Episode episode);
         void Download(Uri fullPathToVideo, string fileName, string episodeName);
+        long GetFileSize(Uri uri);
     }
 }

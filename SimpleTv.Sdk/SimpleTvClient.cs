@@ -6,6 +6,7 @@ using SimpleTv.Sdk.Models;
 using SimpleTv.Sdk.Http;
 using SimpleTv.Sdk.Diagnostics;
 using System;
+using System.IO;
 using SimpleTv.Sdk.Naming;
 using System.Linq;
 
@@ -61,12 +62,21 @@ namespace SimpleTv.Sdk
             tvHttpClient.Reboot(server);
         }
 
-        public void DownloadEpisode(Episode episode, string downloadFolder, string folderFormat, string filenameFormat)
+        public DownloadDetails PrepareDownload(Episode episode, string baseFolder, string folderFormat, string fileNameFormat)
         {
-            var fileName = episode.GenerateFileName(downloadFolder, folderFormat, filenameFormat);
-            var fullPathToVideo = new Uri(episode.Show.Server.StreamBaseUrl + tvHttpClient.GetEpisodeLocation(episode));
+            var downloadDetails = new DownloadDetails();
+            downloadDetails.Episode = episode;
+            downloadDetails.FilePathAndName = episode.GenerateFileName(baseFolder, folderFormat, fileNameFormat);
+            downloadDetails.FullUriToVideo = new Uri(episode.Show.Server.StreamBaseUrl + tvHttpClient.GetEpisodeLocation(episode));
+            downloadDetails.DownloadSize = tvHttpClient.GetFileSize(downloadDetails.FullUriToVideo);
+            downloadDetails.FileExistsWithSameSize = File.Exists(downloadDetails.FilePathAndName) && (new FileInfo(downloadDetails.FilePathAndName)).Length == downloadDetails.DownloadSize;
 
-            tvHttpClient.Download(fullPathToVideo, fileName, episode.EpisodeName);
+            return downloadDetails;
+        }
+
+        public void DownloadEpisode(DownloadDetails downloadDetails)
+        {
+            tvHttpClient.Download(downloadDetails.FullUriToVideo, downloadDetails.FilePathAndName, downloadDetails.Episode.EpisodeName);
         }
     }
 }

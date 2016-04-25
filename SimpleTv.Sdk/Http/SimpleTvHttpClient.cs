@@ -293,5 +293,10 @@ namespace SimpleTv.Sdk.Http
                 Console.Write("     ");
             }
         }
+
+        public long GetFileSize(Uri uri)
+        {
+            return webClient.GetFileSize(uri);
+        }
     }
 }

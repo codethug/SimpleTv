@@ -8,6 +8,7 @@
         public string DownloadFolder { get; set; }
         public string FolderFormat { get; set; }
         public string FilenameFormat { get; set; }
+        public bool OverwriteExistingDownloads { get; set; }
         public string ShowIncludeFilter { get; set; }
         public string ShowExcludeFilter { get; set; }
         public string ServerIncludeFilter { get; set; }

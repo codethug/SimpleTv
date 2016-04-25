@@ -61,6 +61,15 @@ The `-t` or `-folderformat` and `-n` or `-filenameformat` can
 customize the folder names and filenames of the downloaded episodes.  For more
 details, see the [NamingFormat documentation](doc/NamingFormat.md).
 
+## Overwrite Existing episodes
+
+By default, if the downloader finds that an episode has already been downloaded,
+it will skip the episode and not download it again.  The episode to be downloaded
+is checked against existing files based on the filename and the size of the file.
+
+The `-o` or `-overwrite` flag will cause the downloader to overwrite the
+previously downloaded files.
+
 ## Reboot
 
 The `-r` or `-reboot` is used to reboot the SimpleTV DVR.  This can be used
